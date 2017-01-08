@@ -103,7 +103,6 @@ fn read_tag(tags: &mut Cursor, tag_type: &str) -> io::Result<NBT> {
     }
 }
 
-
 fn read_byte(tags: &mut Cursor) -> io::Result<NBT> {
     let val = tags.next()?;
     match val.parse::<i8>() {
@@ -157,7 +156,7 @@ fn read_byte_array(tags: &mut Cursor) -> io::Result<NBT> {
         NBT::Int(x) => x,
         _ => unreachable!(),
     };
-    let mut tmp = Vec::new();
+    let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(match read_byte(tags)? {
             NBT::Byte(x) => x,
@@ -177,7 +176,7 @@ fn read_list(tags: &mut Cursor) -> io::Result<NBT> {
         NBT::Int(x) => x,
         _ => unreachable!(),
     };
-    let mut tmp = Vec::new();
+    let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(read_tag(tags, &list_type)?);
     }
@@ -211,7 +210,7 @@ fn read_int_array(tags: &mut Cursor) -> io::Result<NBT> {
         NBT::Int(x) => x,
         _ => unreachable!(),
     };
-    let mut tmp = Vec::new();
+    let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(match read_int(tags)? {
             NBT::Int(x) => x,

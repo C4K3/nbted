@@ -1,3 +1,4 @@
+use std::env;
 use std::fs::File;
 use std::process::Command;
 use std::io::prelude::*;
@@ -24,7 +25,7 @@ fn main() {
             },
         };
 
-    let out_dir = env!("OUT_DIR");
+    let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("git-revision.txt");
     let mut f = File::create(&dest_path).unwrap();
 

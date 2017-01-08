@@ -4,6 +4,8 @@ Commandline NBT editor written in Rust. It does precisely one thing: convert NBT
 
 It allows you to edit NBT files with your $EDITOR (--edit), as well as to convert NBT files to the pretty text format (--print), and reverse them back (--reverse).
 
+(Fair warning: This is a new program, while there are unit tests, and I believe the program to work, there may be unexpected edge cases. Be sure to backup files you care about before editing.)
+
 Pretty Text Format
 -----
 The pretty text format is designed to be homoiconic, it precisely matches the layout of the original NBT file, with tags and values simply being converted to readable English, and indentation to make it readable being added. The only exception to this are strings, which aren't length-prefixed, but instead are quoted by 2 single quotes, and all single quotes in the string are escaped with a backslash. As an example, here is the bigtest.nbt file:

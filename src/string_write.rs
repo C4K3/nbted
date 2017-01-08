@@ -68,9 +68,13 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: i8, compound: bool)
             writeln!(w, "''{}''", x.replace(r#"'"#, r#"\'"#))?
         },
         &NBT::List(ref x) => {
-            /* FIXME doesn't support lists of length 0
-             * are 0 length lists allowed in NBT? */
-            writeln!(w, " {} {}", x[0].type_string(), x.len())?;
+            /* If the list has length 0, then it just defaults to type "End". */
+            let tag_type = if x.len() > 0 {
+                x[0].type_string()
+            } else {
+                "End"
+            };
+            writeln!(w, " {} {}", tag_type, x.len())?;
             for val in x {
                 match val {
                     &NBT::Compound(..) => (),

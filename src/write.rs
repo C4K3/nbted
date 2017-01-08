@@ -92,7 +92,13 @@ fn write_string<W: Write>(w: &mut W, val: &String) -> io::Result<()> {
 }
 
 fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> io::Result<()> {
-    w.write_all(&[val[0].type_byte()])?;
+    /* If the list has length 0, then it just defaults to type "End". */
+    let tag_type = if val.len() > 0 {
+        val[0].type_byte()
+    } else {
+        0
+    };
+    w.write_all(&[tag_type])?;
     write_int(w, val.len() as i32)?;
 
     for tag in val {

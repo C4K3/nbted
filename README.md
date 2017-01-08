@@ -53,8 +53,6 @@ The very first line in the pretty text format specifies the compression used in 
 
 Items in compounds take the form of Type Name Value. For atomic types, the value is as one would expect, but non-atomic types are a bit more tricky. Compounds have no value. IntArrays and ByteArrays value is their length. A list's value is `Type Length`.
 
-Currently the pretty text format requires all tags be on separate lines, with the elements in compounds and lists/arrays each being placed on a new line, but this requirement may be removed in the future.
-
 Compiling
 -----
 Compiles on stable Rust 1.14+, just with `cargo build --release`. Be sure to run the tests if making changes.

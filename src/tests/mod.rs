@@ -76,6 +76,13 @@ fn player_file_loop() {
     complete_loop_from_nbt(&tests_data::PLAYER_FILE);
 }
 
+#[test]
+fn custom_loop() {
+    /* The custom file is a custom NBT file made to contain various tricky
+     * edge cases that one would not normally see */
+    complete_loop_from_nbt(&tests_data::CUSTOM);
+}
+
 /** Tests that we can read the original (gzip compressed) bigtest and that we
  * can loop it around correctly */
 #[test]

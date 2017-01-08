@@ -1,6 +1,5 @@
 extern crate byteorder;
 extern crate regex;
-#[macro_use] extern crate lazy_static;
 extern crate flate2;
 extern crate peekable_reader;
 extern crate getopts;

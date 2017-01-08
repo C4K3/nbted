@@ -25,7 +25,7 @@ impl Cursor {
                 self.index += 1;
                 Ok(x)
             },
-            None => return io_error!("Tried to read beyond Cursor"),
+            None => io_error!("Tried to read beyond Cursor"),
         }
     }
 }
@@ -39,7 +39,13 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
         Err(_) => return io_error!("Unable to parse string as valid UTF-8"),
     };
 
-    let re = Regex::new(r"''(.*?)''|(\S+)").unwrap();
+    /* We want to make a Vec<String> of all the items in the pretty text format,
+     * where an item is defined as a Type, Length or other atomic value.
+     *
+     * For almost all items this is no problem, because \S+ will match them,
+     * but strings are just a slight exception, because they can contain any
+     * character, including newline. */
+    let re = Regex::new(r"(?s:''(.*?)'')|(\S+)").unwrap();
 
     let mut tags: Vec<String> = Vec::new();
     for cap in re.captures_iter(&string) {

@@ -1,6 +1,6 @@
 [package]
 name = "nbted"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["C4K3"]
 build = "build.rs"
 homepage = "https://github.com/C4K3/nbted"

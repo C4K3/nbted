@@ -1,0 +1,15 @@
+[package]
+name = "nbted"
+version = "1.0.0"
+authors = ["C4K3"]
+build = "build.rs"
+homepage = "https://github.com/C4K3/nbted"
+
+[dependencies]
+byteorder = "1.0"
+regex = "0.2"
+lazy_static = "0.2"
+flate2 = "0.2"
+peekable_reader = { git = "https://github.com/C4K3/peekable-reader-rs" }
+getopts = "0.2"
+tempdir = "0.3"

@@ -65,7 +65,9 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: i8, compound: bool)
             if compound {
                 write!(w, " ")?;
             }
-            writeln!(w, "''{}''", x.replace(r#"'"#, r#"\'"#))?
+            writeln!(w, r#""{}""#,
+                     /* Order is important here */
+                     x.replace(r"\", r"\\").replace(r#"""#, r#"\""#))?
         },
         &NBT::List(ref x) => {
             /* If the list has length 0, then it just defaults to type "End". */
@@ -90,7 +92,9 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: i8, compound: bool)
             for &(ref key, ref val) in x {
                 write_indent(w, indent + 1)?;
                 w.write_all(val.type_string().as_bytes())?;
-                write!(w, r#" ''{}''"#, key.replace(r#"'"#, r#"\'"#))?;
+                write!(w, r#" "{}""#,
+                       /* Order is important here */
+                       key.replace(r"\", r"\\").replace(r#"""#, r#"\""#))?;
                 write_tag(w, val, indent + 1, true)?;
             }
 

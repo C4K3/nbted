@@ -45,15 +45,18 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
      * For almost all items this is no problem, because \S+ will match them,
      * but strings are just a slight exception, because they can contain any
      * character, including newline. */
-    let re = Regex::new(r"(?s:''(.*?)'')|(\S+)").unwrap();
+    let re = match Regex::new(r#""(?s:((?:\\.|[^"])*)")|(\S+)"#) {
+        Ok(x) => x,
+        _ => unreachable!(),
+    };
 
     let mut tags: Vec<String> = Vec::new();
     for cap in re.captures_iter(&string) {
         tags.push(match cap.get(1) {
             /* Only the first capture is a String, so we only undo the quotes
              * on the first capture, not that it would make any difference also
-             * doing it on the second */
-            Some(x) => x.as_str().replace(r#"\'"#, r#"'"#),
+             * doing it on the second. Order in the replaces is important */
+            Some(x) => x.as_str().replace(r#"\""#, r#"""#).replace(r"\\", r"\"),
             None => match cap.get(2) {
                 Some(x) => x.as_str().to_string(),
                 None => return io_error!("Capture did not match regex"),

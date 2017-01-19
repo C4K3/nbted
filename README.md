@@ -2,7 +2,7 @@
 
 Commandline NBT editor written in Rust. It does precisely one thing: convert NBT files to a pretty text format, and reverse the pretty text format back into NBT.
 
-It allows you to edit NBT files with your $EDITOR (--edit), as well as to convert NBT files to the pretty text format (--print), and reverse them back (--reverse).
+It allows you to edit NBT files with your $EDITOR (--edit or just `nbted <file>`), as well as to convert NBT files to the pretty text format (`nbted --print <file>`), and reverse them back (`nbted --reverse `). For example you might do `nbted -p file.nbt > file.txt`, edit the .txt file, and then do `nbted -r file.txt > file.nbt` to apply the edits. Do `nbted --help` for details on the options.
 
 (Fair warning: This is a new program, while there are unit tests, and I believe the program to work, there may be unexpected edge cases. Be sure to backup files you care about before editing.)
 
@@ -10,6 +10,7 @@ Pretty Text Format
 -----
 The pretty text format is designed to be homoiconic, it precisely matches the layout of the original NBT file, with tags and values simply being converted to readable English, and indentation to make it readable being added. The only exception to this are strings, which aren't length-prefixed, but instead are quoted, and all quotes and backslashes in the string are escaped with a backslash. As an example, here is the bigtest.nbt file:
 ```
+~/ > nbted --print bigtest.nbt
 Gzip
 Compound "Level"
 	Long "longTest" 9223372036854775807

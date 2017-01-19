@@ -1,0 +1,140 @@
+.TH NBTED 1 "2017-01-20"
+.SH NAME
+nbted \- edit NBT files
+.SH SYNOPSIS
+.B nbted
+[\fB\-i\fR \fIinput\fR]
+[\fB\-o\fR \fIoutput\fR]
+[\fB\-e\fR [\fINBTfile\fR]]
+[\fB\-p\fR [\fINBTfile\fR]]
+[\fB\-r\fR [\fItxtfile\fR]]
+.SH DESCRIPTION
+.B nbted
+is an NBT editor writte in Rust that does precisely one thing:
+convert NBT files to a pretty text format, and reverse the pretty text format back into NBT.
+.PP
+It allows you to edit NBT files with your \fB$EDITOR\fR (\-\-edit or just \fBnbted <file>\fR),
+as well as to convert NBT files to the pretty text format (\fBnbted \-\-print <file>\fR),
+and reverse them back (\fBnbted \-\-reverse\fR).
+For example you might do \fBnbted \-p file.nbt \-o file.txt\fR,
+edit the .txt file,
+and then do \fBnbted \-r file.txt \-o file.nbt\fR to apply the edits.
+.PP
+Note that \fBnbted file\fR is just an alias for \fBnbted -e file\fR.
+.SH OPTIONS
+.TP
+.BR \-e ", " \-\-edit " "[\fIFILE\fR]
+edit an NBT file with your \fB$EDITOR\fR.
+If FILE is specified, then that file is edited in place,
+but specifying \fB\-\-input\fR and/or \fB\-\-output\fR will override the input/output.
+If no file is specified,
+default to read from \fB\-\-input\fR and writing to \fB\-\-output\fR which themselves default to stdin/stdout.
+In other words, specifying FILE is equivalent to specfying \fB\-\-input\fR and \fB\-\-output\fR to be FILE.
+.TP
+.BR \-p ", " \-\-print " "[\fIFILE\fR]
+print the NBT file to text format.
+Adding an argument to this is equivalent to specifying \fB\-\-input\fR.
+.TP
+.BR \-r ", " \-\-reverse " "[\fIFILE\fR]
+reverse a file in text format back to NBT format.
+Adding an argument to this is equivalent to specifying \fB\-\-input\fR.
+.TP
+.BR \-i ", " \-\-input " "[\fIFILE\fR]
+specify the input file, defaults to stdin (\-)
+.TP
+.BR \-o ", " \-\-output " "[\fIFILE\fR]
+specify the output file, defaults to stdot (\-)
+.TP
+.BR \-h ", " \-\-help
+print help information and exit
+.TP
+.BR \-\-version
+print program version and exit
+.SH NBT TAGS
+There are 11 different NBT tags,
+for convenience we split them into two groups of tags:
+Atomic and composite,
+and the End tag as a special case.
+.PP
+Atomic types consist of \fBByte\fR, \fBShort\fR, \fBInt\fR, \fBFloat\fR, \fBDouble\fR, \fBString\fR.
+.PP
+Composite values are those that define the layout of the NBT file.
+Each composite type contains several other values.
+The Composite types are \fBCompound\fR, \fBList\fR, \fBByteArray\fR, \fBIntArray\fR.
+.PP
+The Compound type is the most used, it contains any amount of values, each of which are named.
+Values within a Compound take the form \fIType Name Value\fR,
+where Type can be any type except End, and Name must be string.
+For atomic values Value is as one would expect,
+but for composite values the Value is a bit more tricky.
+Compounds have no value. IntArrays and ByteArrays' value is their length. A List's value is \fIType Length\fR.
+Compounds are terminated by an End tag, and as such they are not length prefixed.
+Every NBT file is implicitly inside an invisible compound tag,
+and therefore every NBT file must end on an End tag.
+.PP
+The List type specifies a list of unnamed values each of which must be the same type.
+Unlike compounds, the List type does not terminate on the End tag,
+but rather its length must be prefixed.
+.PP
+The ByteArray and IntArray types are simply equivalent to List Byte/Int.
+As such they do not terminate on the End tag,
+but rather their length is prefixed.
+.SH PRETTY TEXT FORMAT
+The pretty text format is designed to be homoiconic,
+it precisely matches the layout of the original NBT file,
+with tags and values simply being converted to readable English,
+and indentation to make it readable being added.
+The only exception to this are strings,
+which aren't length-prefixed,
+but instead are quoted,
+and all quotes and backslashes in the string are escaped with a backslash.
+.PP
+The very first line in the pretty text format specifies the compression used in the NBT file,
+with valid values being \fBNone\fR, \fBGzip\fR and \fBZlib\fR.
+.PP
+When reading text files back in,
+nbted does not care about indentation or whitespace.
+But values must be in the correct case.
+.PP
+As an example, here is the bigtest.nbt file:
+.PP
+.nf
+Gzip
+Compound "Level"
+	Long "longTest" 9223372036854775807
+	Short "shortTest" 32767
+	String "stringTest" "HELLO WORLD THIS IS A TEST STRING ÅÄÖ!"
+	Float "floatTest" 0.49823147
+	Int "intTest" 2147483647
+	Compound "nested compound test"
+		Compound "ham"
+			String "name" "Hampus"
+			Float "value" 0.75
+			End
+		Compound "egg"
+			String "name" "Eggbert"
+			Float "value" 0.5
+			End
+		End
+	List "listTest (long)" Long 5
+		11
+		12
+		13
+		14
+		15
+	List "listTest (compound)" Compound 2
+			String "name" "Compound tag #0"
+			Long "created-on" 1264099775885
+			End
+			String "name" "Compound tag #1"
+			Long "created-on" 1264099775885
+			End
+	Byte "byteTest" 127
+	ByteArray "byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))" 1000
+		0
+		62
+		... 998 list elements removed to prevent the example from being too long ...
+	Double "doubleTest" 0.4931287132182315
+	End
+End
+.fi

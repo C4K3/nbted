@@ -354,12 +354,13 @@ fn reverse(input: &str, output: &str) {
 /** Print the given message and exit with status code 1 */
 fn error(message: &str) -> ! {
     printerrln!("Error: {}", message);
-    printerrln!("Run with --help for help.");
+    printerrln!("Run with --help for help, or read the manpage.");
     exit(1);
 }
 
 fn print_usage(opts: Options) {
     let brief = "Usage: nbted [options] FILE";
     print!("{}", opts.usage(&brief));
+    println!("\nFor detailed usage information, read the manpage.");
 }
 

@@ -10,7 +10,7 @@ nbted \- edit NBT files
 [\fB\-r\fR [\fItxtfile\fR]]
 .SH DESCRIPTION
 .B nbted
-is an NBT editor writte in Rust that does precisely one thing:
+is an NBT editor written in Rust that does precisely one thing:
 convert NBT files to a pretty text format, and reverse the pretty text format back into NBT.
 .PP
 It allows you to edit NBT files with your \fB$EDITOR\fR (\-\-edit or just \fBnbted <file>\fR),
@@ -29,7 +29,7 @@ If FILE is specified, then that file is edited in place,
 but specifying \fB\-\-input\fR and/or \fB\-\-output\fR will override the input/output.
 If no file is specified,
 default to read from \fB\-\-input\fR and writing to \fB\-\-output\fR which themselves default to stdin/stdout.
-In other words, specifying FILE is equivalent to specfying \fB\-\-input\fR and \fB\-\-output\fR to be FILE.
+In other words, specifying FILE is equivalent to specifying \fB\-\-input\fR and \fB\-\-output\fR to be FILE.
 .TP
 .BR \-p ", " \-\-print " "[\fIFILE\fR]
 print the NBT file to text format.
@@ -43,7 +43,7 @@ Adding an argument to this is equivalent to specifying \fB\-\-input\fR.
 specify the input file, defaults to stdin (\-)
 .TP
 .BR \-o ", " \-\-output " "[\fIFILE\fR]
-specify the output file, defaults to stdot (\-)
+specify the output file, defaults to stdout (\-)
 .TP
 .BR \-h ", " \-\-help
 print help information and exit

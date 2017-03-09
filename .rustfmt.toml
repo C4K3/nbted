@@ -1,0 +1,22 @@
+#write_mode = "diff"
+
+# We want all code within 80 columns, except for that which really can't be
+# (typically user visible strings)
+max_width = 80
+ideal_width = 80
+error_on_line_overflow = false
+format_strings = false
+
+# false because we want imports organized by crate
+reorder_imports = false
+reorder_imported_names = true
+newline_style = "Unix"
+wrap_comments = true
+normalize_comments = false
+match_block_trailing_comma = true
+use_try_shorthand = true
+condense_wildcard_suffices = true
+single_line_if_else_max_width = 0
+tab_spaces = 4
+struct_lit_multiline_style = "ForceMulti"
+

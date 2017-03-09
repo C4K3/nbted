@@ -12,7 +12,7 @@ pub enum NBT {
     String(String),
     List(Vec<NBT>),
     Compound(Vec<(String, NBT)>),
-    IntArray(Vec<i32>)
+    IntArray(Vec<i32>),
 }
 impl NBT {
     /** Returns the type of the tag as an English string */
@@ -82,11 +82,11 @@ impl Compression {
      * used in that file. Returns Some(Compression) if the type of compression
      * is known, and None else. */
     pub fn from_first_byte(byte: u8) -> Option<Self> {
-    /* On compression: To identify how an nbt file is compressed, peek at the
-     * first byte in the file, with the following meanings:
-     * 0x0a for no compression
-     * 0x1f gzip compressed
-     * 0x78 zlib compressed */
+        /* On compression: To identify how an nbt file is compressed, peek
+         * at the first byte in the file, with the following meanings:
+         * 0x0a for no compression
+         * 0x1f gzip compressed
+         * 0x78 zlib compressed */
         match byte {
             0x0a => Some(Compression::None),
             0x1f => Some(Compression::Gzip),
@@ -105,4 +105,3 @@ pub struct NBTFile {
     pub root: NBT,
     pub compression: Compression,
 }
-

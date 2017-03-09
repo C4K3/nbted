@@ -1,4 +1,4 @@
-use ::data::{NBT, NBTFile};
+use data::{NBT, NBTFile};
 
 use byteorder::WriteBytesExt;
 
@@ -13,8 +13,11 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
     Ok(())
 }
 
-fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: i8, compound: bool)
--> io::Result<()> {
+fn write_tag<W: Write>(w: &mut W,
+                       tag: &NBT,
+                       indent: i8,
+                       compound: bool)
+                       -> io::Result<()> {
 
     match tag {
         &NBT::End => (),
@@ -65,7 +68,8 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: i8, compound: bool)
             if compound {
                 write!(w, " ")?;
             }
-            writeln!(w, r#""{}""#,
+            writeln!(w,
+                     r#""{}""#,
                      /* Order is important here */
                      x.replace(r"\", r"\\").replace(r#"""#, r#"\""#))?
         },
@@ -92,7 +96,8 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: i8, compound: bool)
             for &(ref key, ref val) in x {
                 write_indent(w, indent + 1)?;
                 w.write_all(val.type_string().as_bytes())?;
-                write!(w, r#" "{}""#,
+                write!(w,
+                       r#" "{}""#,
                        /* Order is important here */
                        key.replace(r"\", r"\\").replace(r#"""#, r#"\""#))?;
                 write_tag(w, val, indent + 1, true)?;
@@ -121,4 +126,3 @@ fn write_indent<W: Write>(w: &mut W, indent: i8) -> io::Result<()> {
     }
     Ok(())
 }
-

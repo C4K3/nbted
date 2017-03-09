@@ -1,6 +1,6 @@
 use std::io::Cursor;
 
-use ::data::{NBTFile, Compression};
+use data::{Compression, NBTFile};
 
 mod tests_data;
 
@@ -16,20 +16,16 @@ fn complete_loop_from_nbt(nbt: &[u8]) {
         .unwrap();
 
     let mut tmp = Vec::new();
-    ::string_write::write_file(&mut tmp, &nbtfile1)
-        .unwrap();
-    let string: String = String::from_utf8(tmp)
-        .unwrap();
+    ::string_write::write_file(&mut tmp, &nbtfile1).unwrap();
+    let string: String = String::from_utf8(tmp).unwrap();
 
     let mut cursor = Cursor::new(string.into_bytes());
-    let nbtfile2 = ::string_read::read_file(&mut cursor)
-        .unwrap();
+    let nbtfile2 = ::string_read::read_file(&mut cursor).unwrap();
 
     assert_eq!(&nbtfile1, &nbtfile2);
 
     let mut tmp = Vec::new();
-    ::write::write_file(&mut tmp, &nbtfile2)
-        .unwrap();
+    ::write::write_file(&mut tmp, &nbtfile2).unwrap();
 
     assert_eq!(original, tmp);
 }
@@ -39,24 +35,19 @@ fn complete_loop_from_nbt(nbt: &[u8]) {
  * resulting NBT enum is identical at each step. */
 fn complete_loop_from_enum(original: &NBTFile) {
     let mut tmp = Vec::new();
-    ::string_write::write_file(&mut tmp, original)
-        .unwrap();
-    let string: String = String::from_utf8(tmp)
-        .unwrap();
+    ::string_write::write_file(&mut tmp, original).unwrap();
+    let string: String = String::from_utf8(tmp).unwrap();
 
     let mut cursor = Cursor::new(string.into_bytes());
-    let nbtfile = ::string_read::read_file(&mut cursor)
-        .unwrap();
+    let nbtfile = ::string_read::read_file(&mut cursor).unwrap();
 
     assert_eq!(original, &nbtfile);
 
     let mut tmp = Vec::new();
-    ::write::write_file(&mut tmp, &nbtfile)
-        .unwrap();
+    ::write::write_file(&mut tmp, &nbtfile).unwrap();
 
     let mut cursor = Cursor::new(tmp);
-    let nbtfile = ::read::read_file(&mut cursor)
-        .unwrap();
+    let nbtfile = ::read::read_file(&mut cursor).unwrap();
 
     assert_eq!(original, &nbtfile);
 }
@@ -153,8 +144,10 @@ fn compression_write() {
         compression: Compression::Zlib,
     };
 
-    assert_eq!(&hello_world.root, &write_read_binary(&hello_world_gzip).root);
-    assert_eq!(&hello_world.root, &write_read_binary(&hello_world_zlib).root);
+    assert_eq!(&hello_world.root,
+               &write_read_binary(&hello_world_gzip).root);
+    assert_eq!(&hello_world.root,
+               &write_read_binary(&hello_world_zlib).root);
 
     let bigtest_gzip = NBTFile {
         root: bigtest.root.clone(),
@@ -169,4 +162,3 @@ fn compression_write() {
     assert_eq!(&bigtest.root, &write_read_binary(&bigtest_gzip).root);
     assert_eq!(&bigtest.root, &write_read_binary(&bigtest_zlib).root);
 }
-

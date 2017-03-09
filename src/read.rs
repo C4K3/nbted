@@ -1,4 +1,4 @@
-use ::data::{NBT, NBTFile, Compression};
+use data::{Compression, NBT, NBTFile};
 
 use std::error::Error;
 use std::io::prelude::Read;
@@ -15,14 +15,15 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
     let mut reader = PeekableReader::new(reader);
     let peek = match reader.peek_byte() {
         Ok(x) => x,
-        Err(_) => return io_error!(
-            "Error peeking first byte in read::read_file"),
+        Err(_) => return io_error!("Error peeking first byte in read::read_file"),
     };
 
     let compression = match Compression::from_first_byte(peek) {
         Some(x) => x,
-        None => return io_error!(
-            "Unknown compression format where first byte is {}", peek),
+        None => {
+            return io_error!("Unknown compression format where first byte is {}",
+                             peek)
+        },
     };
 
     let root = match compression {
@@ -32,9 +33,9 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
     };
 
     Ok(NBTFile {
-        root: root,
-        compression: compression,
-    })
+           root: root,
+           compression: compression,
+       })
 }
 
 /** Reads an NBT compound. I.e. assumes that the first byte from the Reader is
@@ -124,9 +125,9 @@ fn read_byte_array<R: Read>(reader: &mut R) -> io::Result<NBT> {
 
     for _ in 0..length {
         ret.push(match read_byte(reader)? {
-            NBT::Byte(val) => val,
-            _ => unreachable!(),
-        });
+                     NBT::Byte(val) => val,
+                     _ => unreachable!(),
+                 });
     }
 
 
@@ -146,8 +147,10 @@ fn read_string<R: Read>(reader: &mut R) -> io::Result<NBT> {
 
     match String::from_utf8(buf) {
         Ok(val) => Ok(NBT::String(val)),
-        Err(e) => io_error!("Unable to read string, invalid UTF-8 encoding: {}",
-                    e.description())
+        Err(e) => {
+            io_error!("Unable to read string, invalid UTF-8 encoding: {}",
+                      e.description())
+        },
     }
 }
 
@@ -161,7 +164,7 @@ fn read_list<R: Read>(reader: &mut R) -> io::Result<NBT> {
     };
 
     let mut ret: Vec<NBT> = Vec::new();
-    for _ in 0 .. length {
+    for _ in 0..length {
         ret.push(match type_id[0] {
             0x0 => NBT::End,
             0x1 => read_byte(reader)?,
@@ -192,11 +195,10 @@ fn read_int_array<R: Read>(reader: &mut R) -> io::Result<NBT> {
 
     for _ in 0..length {
         ret.push(match read_int(reader)? {
-            NBT::Int(val) => val,
-            _ => unreachable!(),
-        });
+                     NBT::Int(val) => val,
+                     _ => unreachable!(),
+                 });
     }
 
     Ok(NBT::IntArray(ret))
 }
-

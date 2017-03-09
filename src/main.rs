@@ -54,17 +54,22 @@ fn main() {
     If no file is specified, default to read from --input and writing to --output.", "FILE");
     opts.optflagopt("p", "print", "print NBT file to text format. Adding an argument to this is the same as specifying --input", "FILE");
     opts.optflagopt("r", "reverse", "reverse a file in text format to NBT format. Adding an argument to this is the same as specifying --input", "FILE");
-    opts.optopt("i", "input", "specify the input file, defaults to stdin",
+    opts.optopt("i",
+                "input",
+                "specify the input file, defaults to stdin",
                 "FILE");
-    opts.optopt("o", "output", "specify the output file, defaults to stdout",
+    opts.optopt("o",
+                "output",
+                "specify the output file, defaults to stdout",
                 "FILE");
     opts.optflag("h", "help", "print the help menu");
     opts.optflag("", "version", "print program version");
 
     let matches = match opts.parse(&args[1..]) {
         Ok(x) => x,
-        Err(e) => error(&format!("Error parsing options: {:?}",
-                                 e.description())),
+        Err(e) => {
+            error(&format!("Error parsing options: {:?}", e.description()))
+        },
     };
 
     if matches.opt_present("h") {
@@ -88,27 +93,28 @@ fn main() {
      * free argument, use that, else we finally default to - (stdin) */
     let input = match matches.opt_str("input") {
         Some(x) => x,
-        None =>
-            match matches.opts_str(
-                &["edit".to_string(),
-                "print".to_string(),
-                "reverse".to_string()]) {
+        None => {
+            match matches.opts_str(&["edit".to_string(),
+                                     "print".to_string(),
+                                     "reverse".to_string()]) {
 
                 Some(x) => x,
                 None if matches.free.len() > 0 => matches.free[0].clone(),
                 None => "-".to_string(),
-            },
+            }
+        },
     };
 
     /* Analogous to the input */
     let output = match matches.opt_str("output") {
         Some(x) => x,
-        None =>
+        None => {
             match matches.opt_str("edit") {
                 Some(x) => x,
                 None if matches.free.len() > 0 => matches.free[0].clone(),
                 None => "-".to_string(),
-            },
+            }
+        },
     };
 
     if matches.opt_present("print") {
@@ -133,23 +139,25 @@ fn edit(input: &str, output: &str) {
         let mut f = io::stdin();
         match read::read_file(&mut f) {
             Ok(x) => x,
-            Err(_) => error(&format!(
-                    "Unable to parse {}, are you sure it's an NBT file?",
-                    input)),
+            Err(_) => {
+                error(&format!("Unable to parse {}, are you sure it's an NBT file?",
+                               input))
+            },
         }
     } else {
         let path: &Path = Path::new(input);
         let f = match File::open(path) {
             Ok(f) => f,
-            Err(_) => error(&format!("Unable to open file {}", input))
+            Err(_) => error(&format!("Unable to open file {}", input)),
         };
         let mut f = BufReader::new(f);
 
         match read::read_file(&mut f) {
             Ok(x) => x,
-            Err(_) => error(&format!(
-                    "Unable to parse {}, are you sure it's an NBT file?",
-                    input)),
+            Err(_) => {
+                error(&format!("Unable to parse {}, are you sure it's an NBT file?",
+                               input))
+            },
         }
     };
 
@@ -157,8 +165,10 @@ fn edit(input: &str, output: &str) {
      * to the temporary file */
     let tmpdir = match TempDir::new("nbted") {
         Ok(x) => x,
-        Err(e) => error(&format!("Unable to create temporary directory: {:?}",
-                                 e.description())),
+        Err(e) => {
+            error(&format!("Unable to create temporary directory: {:?}",
+                           e.description()))
+        },
     };
 
     let tmp_path = tmpdir.path().join(format!("{}.txt", &input));
@@ -166,61 +176,74 @@ fn edit(input: &str, output: &str) {
     {
         let mut f = match File::create(&tmp_path) {
             Ok(x) => x,
-            Err(e) => error(&format!("Unable to create temporary file: {:?}",
-                                     e.description())),
+            Err(e) => {
+                error(&format!("Unable to create temporary file: {:?}",
+                               e.description()))
+            },
         };
 
         match string_write::write_file(&mut f, &nbt) {
             Ok(()) => (),
-            Err(e) => error(&format!("Unable to write temporary file: {:?}",
-                                     e.description())),
+            Err(e) => {
+                error(&format!("Unable to write temporary file: {:?}",
+                               e.description()))
+            },
         };
 
         match f.sync_all() {
             Ok(()) => (),
-            Err(e) => error(&format!("Unable to synchronize file: {:?}",
-                                     e.description())),
+            Err(e) => {
+                error(&format!("Unable to synchronize file: {:?}",
+                               e.description()))
+            },
         }
     }
 
     /* Then we open the user's $EDITOR on the temporary file */
     let editor = match env::var("EDITOR") {
         Ok(x) => x,
-        Err(_)=>
+        Err(_) => {
             match env::var("VISUAL") {
                 Ok(x) => x,
-                Err(_)=> error("Unable to find $EDITOR"),
+                Err(_) => error("Unable to find $EDITOR"),
             }
+        },
     };
 
     let mut cmd = Command::new(editor);
     cmd.arg(&tmp_path.as_os_str());
     let mut cmd = match cmd.spawn() {
         Ok(x) => x,
-        Err(e) => error(&format!("Error opening editor: {:?}",
-                                 e.description())),
+        Err(e) => {
+            error(&format!("Error opening editor: {:?}", e.description()))
+        },
     };
 
     match cmd.wait() {
         Ok(x) if x.success() => (),
-        Err(e) => error(&format!("Error executing editor: {:?}",
-                                 e.description())),
+        Err(e) => {
+            error(&format!("Error executing editor: {:?}", e.description()))
+        },
         _ => error("Editor did not exit correctly"),
     }
 
     /* Then we parse the text format in the temporary file into NBT */
     let mut f = match File::open(&tmp_path) {
         Ok(x) => x,
-        Err(e) => error(&format!("Unable to read temporary file: {:?}.
+        Err(e) => {
+            error(&format!("Unable to read temporary file: {:?}.
         Nothing was changed",
-                                 e.description())),
+                           e.description()))
+        },
     };
 
     let new_nbt = match string_read::read_file(&mut f) {
         Ok(x) => x,
-        Err(e) => error(&format!("Unable to parse edited file: {:?}.
+        Err(e) => {
+            error(&format!("Unable to parse edited file: {:?}.
         Nothing was changed",
-                                 e.description())),
+                           e.description()))
+        },
     };
 
     if nbt == new_nbt {
@@ -236,19 +259,23 @@ fn edit(input: &str, output: &str) {
         let path: &Path = Path::new(output);
         let f = match File::create(&path) {
             Ok(x) => x,
-            Err(e) => error(
-                &format!("Unable to write to output NBT file {}: {:?}.
+            Err(e) => {
+                error(&format!("Unable to write to output NBT file {}: {:?}.
             Nothing was changed",
-            output,
-            e.description())),
+                               output,
+                               e.description()))
+            },
         };
         let mut f = BufWriter::new(f);
 
         match write::write_file(&mut f, &new_nbt) {
             Ok(()) => (),
-            Err(e) => error(&format!("Error writing NBT file {}: {:?}.
+            Err(e) => {
+                error(&format!("Error writing NBT file {}: {:?}.
             State of NBT file is unknown, consider restoring it from a backup.",
-            output, e.description())),
+                               output,
+                               e.description()))
+            },
         }
     }
 
@@ -262,23 +289,25 @@ fn print(input: &str, output: &str) {
         let mut f = io::stdin();
         match read::read_file(&mut f) {
             Ok(x) => x,
-            Err(_) => error(&format!(
-                    "Unable to parse {}, are you sure it's an NBT file?",
-                    input)),
+            Err(_) => {
+                error(&format!("Unable to parse {}, are you sure it's an NBT file?",
+                               input))
+            },
         }
     } else {
         let path: &Path = Path::new(input);
         let f = match File::open(path) {
             Ok(f) => f,
-            Err(_) => error(&format!("Unable to open file {}", input))
+            Err(_) => error(&format!("Unable to open file {}", input)),
         };
         let mut f = BufReader::new(f);
 
         match read::read_file(&mut f) {
             Ok(x) => x,
-            Err(_) => error(&format!(
-                    "Unable to parse {}, are you sure it's an NBT file?",
-                    input)),
+            Err(_) => {
+                error(&format!("Unable to parse {}, are you sure it's an NBT file?",
+                               input))
+            },
         }
     };
 
@@ -291,19 +320,23 @@ fn print(input: &str, output: &str) {
         let path: &Path = Path::new(output);
         let f = match File::create(&path) {
             Ok(x) => x,
-            Err(e) => error(&format!(
-                    "Unable to write to output NBT file {}: {:?}.
+            Err(e) => {
+                error(&format!("Unable to write to output NBT file {}: {:?}.
             Nothing was changed",
-            output,
-            e.description())),
+                               output,
+                               e.description()))
+            },
         };
         let mut f = BufWriter::new(f);
 
         match string_write::write_file(&mut f, &nbt) {
             Ok(()) => (),
-            Err(e) => error(&format!("Error writing NBT file {}: {:?}.
+            Err(e) => {
+                error(&format!("Error writing NBT file {}: {:?}.
             State of NBT file is unknown, consider restoring it from a backup.",
-            output, e.description())),
+                               output,
+                               e.description()))
+            },
         }
     }
 }
@@ -314,16 +347,20 @@ fn reverse(input: &str, output: &str) {
     let path: &Path = Path::new(input);
     let mut f = match File::open(&path) {
         Ok(x) => x,
-        Err(e) => error(&format!("Unable to read text file {}: {:?}",
-                                 input,
-                                 e.description())),
+        Err(e) => {
+            error(&format!("Unable to read text file {}: {:?}",
+                           input,
+                           e.description()))
+        },
     };
 
     let nbt = match string_read::read_file(&mut f) {
         Ok(x) => x,
-        Err(e) => error(&format!("Unable to parse text file {}: {:?}",
-                                 input,
-                                 e.description())),
+        Err(e) => {
+            error(&format!("Unable to parse text file {}: {:?}",
+                           input,
+                           e.description()))
+        },
     };
 
     /* Then we write the parsed NBT to the output file in NBT format */
@@ -334,19 +371,23 @@ fn reverse(input: &str, output: &str) {
         let path: &Path = Path::new(output);
         let f = match File::create(&path) {
             Ok(x) => x,
-            Err(e) => error(
-                &format!("Unable to write to output NBT file {}: {:?}.
+            Err(e) => {
+                error(&format!("Unable to write to output NBT file {}: {:?}.
             Nothing was changed",
-            output,
-            e.description())),
+                               output,
+                               e.description()))
+            },
         };
         let mut f = BufWriter::new(f);
 
         match write::write_file(&mut f, &nbt) {
             Ok(()) => (),
-            Err(e) => error(&format!("Error writing NBT file {}: {:?}.
+            Err(e) => {
+                error(&format!("Error writing NBT file {}: {:?}.
             State of NBT file is unknown, consider restoring it from a backup.",
-            output, e.description())),
+                               output,
+                               e.description()))
+            },
         }
     }
 }
@@ -363,4 +404,3 @@ fn print_usage(opts: Options) {
     print!("{}", opts.usage(&brief));
     println!("\nFor detailed usage information, read the manpage.");
 }
-

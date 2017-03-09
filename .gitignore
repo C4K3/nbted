@@ -1,3 +1,5 @@
 target
 *.nbt
 *.dat
+*.bk
+*.swp

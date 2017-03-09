@@ -1,4 +1,4 @@
-use ::data::{NBT, NBTFile, Compression};
+use data::{Compression, NBT, NBTFile};
 
 use std::io;
 use std::io::Read;
@@ -39,8 +39,9 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
         Err(_) => return io_error!("Unable to parse string as valid UTF-8"),
     };
 
-    /* We want to make a Vec<String> of all the items in the pretty text format,
-     * where an item is defined as a Type, Length or other atomic value.
+    /* We want to make a Vec<String> of all the items in the pretty text
+     * format, where an item is defined as a Type, Length or other atomic
+     * value.
      *
      * For almost all items this is no problem, because \S+ will match them,
      * but strings are just a slight exception, because they can contain any
@@ -62,7 +63,7 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
                 None => return io_error!("Capture did not match regex"),
             },
         });
-    };
+    }
 
     if tags.len() < 2 {
         /* There has to be at least 2 tags: The compression, and the End tag
@@ -84,9 +85,9 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
     let root = read_compound(&mut cursor)?;
 
     Ok(NBTFile {
-        root: root,
-        compression: compression,
-    })
+           root: root,
+           compression: compression,
+       })
 }
 
 fn read_tag(tags: &mut Cursor, tag_type: &str) -> io::Result<NBT> {
@@ -162,9 +163,9 @@ fn read_byte_array(tags: &mut Cursor) -> io::Result<NBT> {
     let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(match read_byte(tags)? {
-            NBT::Byte(x) => x,
-            _ => unreachable!(),
-        });
+                     NBT::Byte(x) => x,
+                     _ => unreachable!(),
+                 });
     }
     Ok(NBT::ByteArray(tmp))
 }
@@ -216,10 +217,9 @@ fn read_int_array(tags: &mut Cursor) -> io::Result<NBT> {
     let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(match read_int(tags)? {
-            NBT::Int(x) => x,
-            _ => unreachable!(),
-        });
+                     NBT::Int(x) => x,
+                     _ => unreachable!(),
+                 });
     }
     Ok(NBT::IntArray(tmp))
 }
-

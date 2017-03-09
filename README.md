@@ -56,5 +56,5 @@ Items in compounds take the form of Type Name Value. For atomic types, the value
 
 Compiling
 -----
-Compiles on stable Rust 1.14+, just with `cargo build --release`. Be sure to run the tests if making changes.
+Compiles on stable Rust 1.14+, just with `cargo build --release`. Be sure to run the tests and rustfmt if making changes.
 

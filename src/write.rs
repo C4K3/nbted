@@ -1,4 +1,4 @@
-use ::data::{NBT, NBTFile, Compression};
+use data::{Compression, NBT, NBTFile};
 
 use std::io;
 use std::io::Write;
@@ -108,8 +108,10 @@ fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> io::Result<()> {
     Ok(())
 }
 
-fn write_compound<W: Write>(w: &mut W, map: &Vec<(String, NBT)>, end: bool)
--> io::Result<()> {
+fn write_compound<W: Write>(w: &mut W,
+                            map: &Vec<(String, NBT)>,
+                            end: bool)
+                            -> io::Result<()> {
     for &(ref key, ref tag) in map {
         w.write_all(&[tag.type_byte()])?;
         write_string(w, key)?;
@@ -133,4 +135,3 @@ fn write_int_array<W: Write>(w: &mut W, val: &Vec<i32>) -> io::Result<()> {
 
     Ok(())
 }
-

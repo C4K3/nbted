@@ -3,6 +3,7 @@
 # We want all code within 80 columns, except for that which really can't be
 # (typically user visible strings)
 max_width = 80
+chain_one_line_max = 80
 error_on_line_overflow = false
 format_strings = false
 

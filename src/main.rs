@@ -231,7 +231,7 @@ fn edit(input: &str, output: &str) {
     let mut f = match File::open(&tmp_path) {
         Ok(x) => x,
         Err(e) => {
-            error(&format!("Unable to read temporary file: {:?}.
+            error(&format!("Unable to read temporary file: {:?}.\n\
         Nothing was changed",
                            e.description()))
         },
@@ -240,7 +240,7 @@ fn edit(input: &str, output: &str) {
     let new_nbt = match string_read::read_file(&mut f) {
         Ok(x) => x,
         Err(e) => {
-            error(&format!("Unable to parse edited file: {:?}.
+            error(&format!("Unable to parse edited file: {:?}.\n\
         Nothing was changed",
                            e.description()))
         },
@@ -260,7 +260,7 @@ fn edit(input: &str, output: &str) {
         let f = match File::create(&path) {
             Ok(x) => x,
             Err(e) => {
-                error(&format!("Unable to write to output NBT file {}: {:?}.
+                error(&format!("Unable to write to output NBT file {}: {:?}.\n\
             Nothing was changed",
                                output,
                                e.description()))
@@ -271,7 +271,7 @@ fn edit(input: &str, output: &str) {
         match write::write_file(&mut f, &new_nbt) {
             Ok(()) => (),
             Err(e) => {
-                error(&format!("Error writing NBT file {}: {:?}.
+                error(&format!("Error writing NBT file {}: {:?}.\n\
             State of NBT file is unknown, consider restoring it from a backup.",
                                output,
                                e.description()))
@@ -321,7 +321,7 @@ fn print(input: &str, output: &str) {
         let f = match File::create(&path) {
             Ok(x) => x,
             Err(e) => {
-                error(&format!("Unable to write to output NBT file {}: {:?}.
+                error(&format!("Unable to write to output NBT file {}: {:?}.\n\
             Nothing was changed",
                                output,
                                e.description()))
@@ -332,7 +332,7 @@ fn print(input: &str, output: &str) {
         match string_write::write_file(&mut f, &nbt) {
             Ok(()) => (),
             Err(e) => {
-                error(&format!("Error writing NBT file {}: {:?}.
+                error(&format!("Error writing NBT file {}: {:?}.\n\
             State of NBT file is unknown, consider restoring it from a backup.",
                                output,
                                e.description()))
@@ -372,7 +372,7 @@ fn reverse(input: &str, output: &str) {
         let f = match File::create(&path) {
             Ok(x) => x,
             Err(e) => {
-                error(&format!("Unable to write to output NBT file {}: {:?}.
+                error(&format!("Unable to write to output NBT file {}: {:?}.\n\
             Nothing was changed",
                                output,
                                e.description()))
@@ -383,7 +383,7 @@ fn reverse(input: &str, output: &str) {
         match write::write_file(&mut f, &nbt) {
             Ok(()) => (),
             Err(e) => {
-                error(&format!("Error writing NBT file {}: {:?}.
+                error(&format!("Error writing NBT file {}: {:?}.\n\
             State of NBT file is unknown, consider restoring it from a backup.",
                                output,
                                e.description()))

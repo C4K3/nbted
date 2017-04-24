@@ -1,7 +1,6 @@
 extern crate byteorder;
 extern crate regex;
 extern crate flate2;
-extern crate peekable_reader;
 extern crate getopts;
 extern crate tempdir;
 
@@ -136,7 +135,9 @@ fn edit(input: &str, output: &str) {
 
     /* First we read the NBT data from the input */
     let nbt = if input == "-" {
-        let mut f = io::stdin();
+        // let mut f = BufReader::new(io::stdin());
+        let f = io::stdin();
+        let mut f = f.lock();
         match read::read_file(&mut f) {
             Ok(x) => x,
             Err(_) => {
@@ -312,7 +313,8 @@ fn open_editor(tmp_path: &Path) -> io::Result<data::NBTFile> {
 fn print(input: &str, output: &str) {
     /* First we read a NBTFile from the input */
     let nbt = if input == "-" {
-        let mut f = io::stdin();
+        let f = io::stdin();
+        let mut f = f.lock();
         match read::read_file(&mut f) {
             Ok(x) => x,
             Err(_) => {

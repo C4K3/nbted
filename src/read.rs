@@ -1,21 +1,20 @@
 use data::{Compression, NBT, NBTFile};
 
 use std::error::Error;
-use std::io::prelude::Read;
-use std::io;
+use std::io::{self, BufRead, Read};
 
 use byteorder::{BigEndian, ReadBytesExt};
-
-use peekable_reader::PeekableReader;
 
 use flate2::read::{GzDecoder, ZlibDecoder};
 
 /** Read an NBT file from the given reader */
-pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
-    let mut reader = PeekableReader::new(reader);
-    let peek = match reader.peek_byte() {
-        Ok(x) => x,
-        Err(_) => return io_error!("Error peeking first byte in read::read_file"),
+pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
+    /* Peek into the first byte of the reader, which is used to determine the
+     * compression */
+    let peek = match reader.fill_buf() {
+        Ok(x) if x.len() >= 1 => x[0],
+        Ok(_) => return io_error!("Error peaking first byte in read::read_file, file was EOF"),
+        Err(e) => return Err(e),
     };
 
     let compression = match Compression::from_first_byte(peek) {

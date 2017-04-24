@@ -31,8 +31,7 @@ macro_rules! io_error {
 macro_rules! printerrln {
     ($fmtstr:tt) => { printerrln!($fmtstr,) };
     ($fmtstr:tt, $( $args:expr ),* ) => {
-        writeln!(&mut io::stderr(), $fmtstr, $( $args ),* )
-            .expect("Error writing to stderr")
+        writeln!(&mut io::stderr(), $fmtstr, $( $args ),* ).silent_unwrap();
     }
 }
 
@@ -43,6 +42,20 @@ mod string_write;
 mod string_read;
 #[cfg(test)]
 mod tests;
+
+/// Trait used in place of unwrap for printing to stdout/stderr, since if that
+/// errors the program should simply exit with no further output
+trait SilentUnwrap<T> {
+    fn silent_unwrap(self) -> T;
+}
+impl<T> SilentUnwrap<T> for io::Result<T> {
+    fn silent_unwrap(self) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => std::process::exit(1),
+        }
+    }
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -237,7 +250,7 @@ fn edit(input: &str, output: &str) {
     /* And finally we write the edited nbt (new_nbt) into the output file */
     if output == "-" {
         let mut f = io::stdout();
-        write::write_file(&mut f, &new_nbt).expect("Error writing to stdout");
+        write::write_file(&mut f, &new_nbt).silent_unwrap();
     } else {
         let path: &Path = Path::new(output);
         let f = match File::create(&path) {
@@ -342,8 +355,7 @@ fn print(input: &str, output: &str) {
     /* Then we write the NBTFile to the output in text format */
     if output == "-" {
         let mut f = io::stdout();
-        string_write::write_file(&mut f, &nbt)
-            .expect("Error writing to stdout");
+        string_write::write_file(&mut f, &nbt).silent_unwrap();
     } else {
         let path: &Path = Path::new(output);
         let f = match File::create(&path) {
@@ -394,7 +406,7 @@ fn reverse(input: &str, output: &str) {
     /* Then we write the parsed NBT to the output file in NBT format */
     if output == "-" {
         let mut f = io::stdout();
-        write::write_file(&mut f, &nbt).expect("Error writing to stdout");
+        write::write_file(&mut f, &nbt).silent_unwrap();
     } else {
         let path: &Path = Path::new(output);
         let f = match File::create(&path) {

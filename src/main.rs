@@ -199,7 +199,75 @@ fn edit(input: &str, output: &str) {
         }
     }
 
-    /* Then we open the user's $EDITOR on the temporary file */
+    let new_nbt = {
+        let mut new_nbt = open_editor(&tmp_path);
+
+        while let Err(e) = new_nbt {
+            printerrln!("Unable to parse edited file: {}.\n\
+            Do you want to open the file for editing again? (y/N)",
+                        e.description());
+
+            let mut line = String::new();
+            match io::stdin().read_line(&mut line) {
+                Ok(_) => (),
+                Err(e) => {
+                    error(&format!("Error reading from stdin: {}\n\
+                                   Nothing was changed.",
+                                   e.description()))
+                },
+            }
+
+            if line.trim() == "y" {
+                new_nbt = open_editor(&tmp_path);
+            } else {
+                printerrln!("Exiting ... File is unchanged.");
+                std::process::exit(1);
+            }
+        }
+
+        new_nbt.expect("new_nbt was Error")
+    };
+
+    if nbt == new_nbt {
+        printerrln!("No changes, will do nothing.");
+        return;
+    }
+
+    /* And finally we write the edited nbt (new_nbt) into the output file */
+    if output == "-" {
+        let mut f = io::stdout();
+        write::write_file(&mut f, &new_nbt).expect("Error writing to stdout");
+    } else {
+        let path: &Path = Path::new(output);
+        let f = match File::create(&path) {
+            Ok(x) => x,
+            Err(e) => {
+                error(&format!("Unable to write to output NBT file {}: {:?}.\n\
+            Nothing was changed",
+                               output,
+                               e.description()))
+            },
+        };
+        let mut f = BufWriter::new(f);
+
+        match write::write_file(&mut f, &new_nbt) {
+            Ok(()) => (),
+            Err(e) => {
+                error(&format!("Error writing NBT file {}: {:?}.\n\
+            State of NBT file is unknown, consider restoring it from a backup.",
+                               output,
+                               e.description()))
+            },
+        }
+    }
+
+    printerrln!("File edited successfully.");
+}
+
+/// Open the user's $EDITOR on the temporary file, wait until the editor is
+/// closed again, read the temporary file and attempt to parse it into NBT,
+/// returning the result.
+fn open_editor(tmp_path: &Path) -> io::Result<data::NBTFile> {
     let editor = match env::var("EDITOR") {
         Ok(x) => x,
         Err(_) => {
@@ -237,49 +305,7 @@ fn edit(input: &str, output: &str) {
         },
     };
 
-    let new_nbt = match string_read::read_file(&mut f) {
-        Ok(x) => x,
-        Err(e) => {
-            error(&format!("Unable to parse edited file: {:?}.\n\
-        Nothing was changed",
-                           e.description()))
-        },
-    };
-
-    if nbt == new_nbt {
-        printerrln!("No changes, will do nothing.");
-        return;
-    }
-
-    /* And finally we write the edited nbt (new_nbt) into the output file */
-    if output == "-" {
-        let mut f = io::stdout();
-        write::write_file(&mut f, &new_nbt).expect("Error writing to stdout");
-    } else {
-        let path: &Path = Path::new(output);
-        let f = match File::create(&path) {
-            Ok(x) => x,
-            Err(e) => {
-                error(&format!("Unable to write to output NBT file {}: {:?}.\n\
-            Nothing was changed",
-                               output,
-                               e.description()))
-            },
-        };
-        let mut f = BufWriter::new(f);
-
-        match write::write_file(&mut f, &new_nbt) {
-            Ok(()) => (),
-            Err(e) => {
-                error(&format!("Error writing NBT file {}: {:?}.\n\
-            State of NBT file is unknown, consider restoring it from a backup.",
-                               output,
-                               e.description()))
-            },
-        }
-    }
-
-    printerrln!("File edited successfully.");
+    string_read::read_file(&mut f)
 }
 
 /** When the user wants to print an NBT file to text format */

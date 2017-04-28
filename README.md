@@ -1,6 +1,6 @@
 # nbted
 
-Commandline NBT editor written in Rust. It does precisely one thing: convert NBT files to a pretty text format, and reverse the pretty text format back into NBT.
+Command-line NBT editor written in Rust. It does precisely one thing: convert NBT files to a pretty text format, and reverse the pretty text format back into NBT.
 
 It allows you to edit NBT files with your $EDITOR (--edit or just `nbted <file>`), as well as to convert NBT files to the pretty text format (`nbted --print <file>`), and reverse them back (`nbted --reverse `). For example you might do `nbted -p file.nbt > file.txt`, edit the .txt file, and then do `nbted -r file.txt > file.nbt` to apply the edits. Do `nbted --help` or read the manpage for details on the options.
 
@@ -56,5 +56,10 @@ Items in compounds take the form of Type Name Value. For atomic types, the value
 
 Compiling
 -----
-Compiles on stable Rust 1.14+, just with `cargo build --release`. Be sure to run the tests and rustfmt if making changes.
+Compiles on stable rust, just with
+```
+cargo build --release
+```
+Be sure to run the tests and rustfmt if making changes.
 
+nbted is also available for installation on crates.io (`cargo install nbted`) and the AUR.

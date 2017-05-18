@@ -155,7 +155,7 @@ fn edit(input: &str, output: &str) {
             Ok(x) => x,
             Err(_) => {
                 error(&format!("Unable to parse {}, are you sure it's an NBT file?",
-                               input))
+                              input))
             },
         }
     } else {
@@ -170,7 +170,7 @@ fn edit(input: &str, output: &str) {
             Ok(x) => x,
             Err(_) => {
                 error(&format!("Unable to parse {}, are you sure it's an NBT file?",
-                               input))
+                              input))
             },
         }
     };
@@ -181,7 +181,7 @@ fn edit(input: &str, output: &str) {
         Ok(x) => x,
         Err(e) => {
             error(&format!("Unable to create temporary directory: {:?}",
-                           e.description()))
+                          e.description()))
         },
     };
 
@@ -192,7 +192,7 @@ fn edit(input: &str, output: &str) {
             Ok(x) => x,
             Err(e) => {
                 error(&format!("Unable to create temporary file: {:?}",
-                               e.description()))
+                              e.description()))
             },
         };
 
@@ -200,7 +200,7 @@ fn edit(input: &str, output: &str) {
             Ok(()) => (),
             Err(e) => {
                 error(&format!("Unable to write temporary file: {:?}",
-                               e.description()))
+                              e.description()))
             },
         };
 
@@ -208,7 +208,7 @@ fn edit(input: &str, output: &str) {
             Ok(()) => (),
             Err(e) => {
                 error(&format!("Unable to synchronize file: {:?}",
-                               e.description()))
+                              e.description()))
             },
         }
     }
@@ -227,7 +227,7 @@ fn edit(input: &str, output: &str) {
                 Err(e) => {
                     error(&format!("Error reading from stdin: {}\n\
                                    Nothing was changed.",
-                                   e.description()))
+                                  e.description()))
                 },
             }
 
@@ -258,8 +258,8 @@ fn edit(input: &str, output: &str) {
             Err(e) => {
                 error(&format!("Unable to write to output NBT file {}: {:?}.\n\
             Nothing was changed",
-                               output,
-                               e.description()))
+                              output,
+                              e.description()))
             },
         };
         let mut f = BufWriter::new(f);
@@ -269,8 +269,8 @@ fn edit(input: &str, output: &str) {
             Err(e) => {
                 error(&format!("Error writing NBT file {}: {:?}.\n\
             State of NBT file is unknown, consider restoring it from a backup.",
-                               output,
-                               e.description()))
+                              output,
+                              e.description()))
             },
         }
     }
@@ -315,7 +315,7 @@ fn open_editor(tmp_path: &Path) -> io::Result<data::NBTFile> {
         Err(e) => {
             error(&format!("Unable to read temporary file: {:?}.\n\
         Nothing was changed",
-                           e.description()))
+                          e.description()))
         },
     };
 
@@ -332,7 +332,7 @@ fn print(input: &str, output: &str) {
             Ok(x) => x,
             Err(_) => {
                 error(&format!("Unable to parse {}, are you sure it's an NBT file?",
-                               input))
+                              input))
             },
         }
     } else {
@@ -347,7 +347,7 @@ fn print(input: &str, output: &str) {
             Ok(x) => x,
             Err(_) => {
                 error(&format!("Unable to parse {}, are you sure it's an NBT file?",
-                               input))
+                              input))
             },
         }
     };
@@ -363,8 +363,8 @@ fn print(input: &str, output: &str) {
             Err(e) => {
                 error(&format!("Unable to write to output NBT file {}: {:?}.\n\
             Nothing was changed",
-                               output,
-                               e.description()))
+                              output,
+                              e.description()))
             },
         };
         let mut f = BufWriter::new(f);
@@ -374,8 +374,8 @@ fn print(input: &str, output: &str) {
             Err(e) => {
                 error(&format!("Error writing NBT file {}: {:?}.\n\
             State of NBT file is unknown, consider restoring it from a backup.",
-                               output,
-                               e.description()))
+                              output,
+                              e.description()))
             },
         }
     }
@@ -389,8 +389,8 @@ fn reverse(input: &str, output: &str) {
         Ok(x) => x,
         Err(e) => {
             error(&format!("Unable to read text file {}: {:?}",
-                           input,
-                           e.description()))
+                          input,
+                          e.description()))
         },
     };
 
@@ -398,8 +398,8 @@ fn reverse(input: &str, output: &str) {
         Ok(x) => x,
         Err(e) => {
             error(&format!("Unable to parse text file {}: {:?}",
-                           input,
-                           e.description()))
+                          input,
+                          e.description()))
         },
     };
 
@@ -414,8 +414,8 @@ fn reverse(input: &str, output: &str) {
             Err(e) => {
                 error(&format!("Unable to write to output NBT file {}: {:?}.\n\
             Nothing was changed",
-                               output,
-                               e.description()))
+                              output,
+                              e.description()))
             },
         };
         let mut f = BufWriter::new(f);
@@ -425,8 +425,8 @@ fn reverse(input: &str, output: &str) {
             Err(e) => {
                 error(&format!("Error writing NBT file {}: {:?}.\n\
             State of NBT file is unknown, consider restoring it from a backup.",
-                               output,
-                               e.description()))
+                              output,
+                              e.description()))
             },
         }
     }

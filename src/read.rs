@@ -13,7 +13,9 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
      * compression */
     let peek = match reader.fill_buf() {
         Ok(x) if x.len() >= 1 => x[0],
-        Ok(_) => return io_error!("Error peaking first byte in read::read_file, file was EOF"),
+        Ok(_) => {
+            return io_error!("Error peaking first byte in read::read_file, file was EOF",)
+        },
         Err(e) => return Err(e),
     };
 

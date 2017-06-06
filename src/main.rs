@@ -185,7 +185,15 @@ fn edit(input: &str, output: &str) {
         },
     };
 
-    let tmp_path = tmpdir.path().join(format!("{}.txt", &input));
+    let tmp = match Path::new(input).file_name() {
+        Some(x) => {
+            let mut x = x.to_os_string();
+            x.push(".txt");
+            x
+        },
+        None => error(&format!("Error reading file name")),
+    };
+    let tmp_path = tmpdir.path().join(tmp);
 
     {
         let mut f = match File::create(&tmp_path) {

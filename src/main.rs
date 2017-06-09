@@ -257,7 +257,8 @@ fn edit(input: &str, output: &str) {
 
     /* And finally we write the edited nbt (new_nbt) into the output file */
     if output == "-" {
-        let mut f = io::stdout();
+        let f = io::stdout();
+        let mut f = f.lock();
         write::write_file(&mut f, &new_nbt).silent_unwrap();
     } else {
         let path: &Path = Path::new(output);
@@ -362,7 +363,8 @@ fn print(input: &str, output: &str) {
 
     /* Then we write the NBTFile to the output in text format */
     if output == "-" {
-        let mut f = io::stdout();
+        let f = io::stdout();
+        let mut f = f.lock();
         string_write::write_file(&mut f, &nbt).silent_unwrap();
     } else {
         let path: &Path = Path::new(output);
@@ -413,7 +415,8 @@ fn reverse(input: &str, output: &str) {
 
     /* Then we write the parsed NBT to the output file in NBT format */
     if output == "-" {
-        let mut f = io::stdout();
+        let f = io::stdout();
+        let mut f = f.lock();
         write::write_file(&mut f, &nbt).silent_unwrap();
     } else {
         let path: &Path = Path::new(output);

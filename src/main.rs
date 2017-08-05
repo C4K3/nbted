@@ -17,8 +17,8 @@ use getopts::Options;
 
 use tempdir::TempDir;
 
-/** Create an InvalidData io::Error with the description being a
- * formatted string */
+/// Create an InvalidData io::Error with the description being a
+/// formatted string
 macro_rules! io_error {
     ($fmtstr:tt) => { io_error!($fmtstr,) };
     ($fmtstr:tt, $( $args:expr ),* ) => {
@@ -27,7 +27,7 @@ macro_rules! io_error {
     };
 }
 
-/** Alternative to println! that prints to stderr instead of stdout */
+/// Alternative to println! that prints to stderr instead of stdout
 macro_rules! printerrln {
     ($fmtstr:tt) => { printerrln!($fmtstr,) };
     ($fmtstr:tt, $( $args:expr ),* ) => {
@@ -143,7 +143,7 @@ fn main() {
     edit(&input, &output);
 }
 
-/** When the user wants to edit a specific file in place */
+/// When the user wants to edit a specific file in place
 fn edit(input: &str, output: &str) {
 
     /* First we read the NBT data from the input */
@@ -331,7 +331,7 @@ fn open_editor(tmp_path: &Path) -> io::Result<data::NBTFile> {
     string_read::read_file(&mut f)
 }
 
-/** When the user wants to print an NBT file to text format */
+/// When the user wants to print an NBT file to text format
 fn print(input: &str, output: &str) {
     /* First we read a NBTFile from the input */
     let nbt = if input == "-" {
@@ -391,7 +391,7 @@ fn print(input: &str, output: &str) {
     }
 }
 
-/** When the user wants to convert a text format file into an NBT file */
+/// When the user wants to convert a text format file into an NBT file
 fn reverse(input: &str, output: &str) {
     /* First we read the input file in the text format */
     let path: &Path = Path::new(input);
@@ -443,7 +443,7 @@ fn reverse(input: &str, output: &str) {
     }
 }
 
-/** Print the given message and exit with status code 1 */
+/// Print the given message and exit with status code 1
 fn error(message: &str) -> ! {
     printerrln!("Error: {}", message);
     printerrln!("Run with --help for help, or read the manpage.");

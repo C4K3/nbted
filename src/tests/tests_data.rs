@@ -1,4 +1,4 @@
-/** Contains the binary NBT files */
+/// Contains the binary NBT files
 
 /* Read binary files into rust format using
  * xxd -p file | sed 's/\(..\)/0x\1,/g' | tr -d '\n'

@@ -5,8 +5,8 @@ use std::io::Read;
 
 use regex::Regex;
 
-/** Based on the idea of std::io::Cursor, letting us iterate over all the tags
- * from the pretty text format */
+/// Based on the idea of std::io::Cursor, letting us iterate over all the tags
+/// from the pretty text format
 struct Cursor {
     inner: Vec<String>,
     index: usize,
@@ -18,7 +18,7 @@ impl Cursor {
             index: 0,
         }
     }
-    /** Gets the next item, pushing the index one forward */
+    /// Gets the next item, pushing the index one forward
     fn next(&mut self) -> io::Result<&str> {
         match self.inner.get(self.index) {
             Some(ref x) => {
@@ -30,7 +30,7 @@ impl Cursor {
     }
 }
 
-/** Read an NBT file from the reader, in the pretty text format */
+/// Read an NBT file from the reader, in the pretty text format
 pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
     let mut buf = Vec::new();
     let _: usize = reader.read_to_end(&mut buf)?;

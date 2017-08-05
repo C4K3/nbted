@@ -1,4 +1,4 @@
-/** Represents a single NBT tab */
+/// Represents a single NBT tab
 #[derive(Clone, PartialEq, Debug)]
 pub enum NBT {
     End,
@@ -15,7 +15,7 @@ pub enum NBT {
     IntArray(Vec<i32>),
 }
 impl NBT {
-    /** Returns the type of the tag as an English string */
+    /// Returns the type of the tag as an English string
     pub fn type_string(&self) -> &str {
         match self {
             &NBT::End => "End",
@@ -32,7 +32,7 @@ impl NBT {
             &NBT::IntArray(..) => "IntArray",
         }
     }
-    /** Returns the type of the tag as a single u8 */
+    /// Returns the type of the tag as a single u8
     pub fn type_byte(&self) -> u8 {
         match self {
             &NBT::End => 0,
@@ -51,7 +51,7 @@ impl NBT {
     }
 }
 
-/** Represents the different compression formats NBT files can be in */
+/// Represents the different compression formats NBT files can be in
 #[derive(Clone, PartialEq, Debug)]
 pub enum Compression {
     None,
@@ -59,7 +59,7 @@ pub enum Compression {
     Zlib,
 }
 impl Compression {
-    /** Returns the type of compression as an English string */
+    /// Returns the type of compression as an English string
     pub fn to_str(&self) -> &str {
         match self {
             &Compression::None => "None",
@@ -67,9 +67,9 @@ impl Compression {
             &Compression::Zlib => "Zlib",
         }
     }
-    /** Given the name of a type of compression, return the corresponding
-     * Compression enum. Returns Some(Compression) if it exists, and None if no
-     * such Compression type exists */
+    /// Given the name of a type of compression, return the corresponding
+    /// Compression enum. Returns Some(Compression) if it exists, and None if no
+    /// such Compression type exists
     pub fn from_str(string: &str) -> Option<Self> {
         match string {
             "None" => Some(Compression::None),
@@ -78,9 +78,9 @@ impl Compression {
             _ => None,
         }
     }
-    /** Given the first byte from an NBT file, return the type of Compression
-     * used in that file. Returns Some(Compression) if the type of compression
-     * is known, and None else. */
+    /// Given the first byte from an NBT file, return the type of Compression
+    /// used in that file. Returns Some(Compression) if the type of compression
+    /// is known, and None else.
     pub fn from_first_byte(byte: u8) -> Option<Self> {
         /* On compression: To identify how an nbt file is compressed, peek
          * at the first byte in the file, with the following meanings:
@@ -96,10 +96,10 @@ impl Compression {
     }
 }
 
-/** Represents a single NBT file, that is all the NBT data, as well as a
- * compression type.
- *
- * The root NBT tag will always be an NBT::Compound */
+/// Represents a single NBT file, that is all the NBT data, as well as a
+/// compression type.
+///
+/// The root NBT tag will always be an NBT::Compound
 #[derive(PartialEq, Debug)]
 pub struct NBTFile {
     pub root: NBT,

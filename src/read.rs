@@ -7,7 +7,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 
 use flate2::read::{GzDecoder, ZlibDecoder};
 
-/** Read an NBT file from the given reader */
+/// Read an NBT file from the given reader
 pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
     /* Peek into the first byte of the reader, which is used to determine the
      * compression */
@@ -39,11 +39,11 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
        })
 }
 
-/** Reads an NBT compound. I.e. assumes that the first byte from the Reader is
- * the byte that determines the NBT type of the first value INSIDE whatever
- * compound we're in.
- *
- * This will always return an NBT::Compound, never any other type of NBT. */
+/// Reads an NBT compound. I.e. assumes that the first byte from the Reader is
+/// the byte that determines the NBT type of the first value INSIDE whatever
+/// compound we're in.
+///
+/// This will always return an NBT::Compound, never any other type of NBT.
 fn read_compound<R: Read>(reader: &mut R) -> io::Result<NBT> {
     let mut map = Vec::new();
 

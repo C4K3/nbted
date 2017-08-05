@@ -10,7 +10,7 @@ use flate2::write::{GzEncoder, ZlibEncoder};
 
 const COMPRESSION_LEVEL: flate2::Compression = flate2::Compression::Default;
 
-/** Given an NBT file, write it as a binary NBT file to the writer */
+/// Given an NBT file, write it as a binary NBT file to the writer
 pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
     let map = match file.root {
         NBT::Compound(ref x) => x,

@@ -4,11 +4,11 @@ use data::{Compression, NBTFile};
 
 mod tests_data;
 
-/** Given some NBT data in original format, loops it around by converting it
- * in the following way: Read NBT -> Write String -> Read String -> Write NBT
- * and checks that the resulting NBT data is identical to the original
- *
- * Obviously this won't work for compressed NBT data */
+/// Given some NBT data in original format, loops it around by converting it
+/// in the following way: Read NBT -> Write String -> Read String -> Write NBT
+/// and checks that the resulting NBT data is identical to the original
+///
+/// Obviously this won't work for compressed NBT data
 fn complete_loop_from_nbt(nbt: &[u8]) {
     let mut original = Vec::new();
     original.extend_from_slice(nbt);
@@ -30,9 +30,9 @@ fn complete_loop_from_nbt(nbt: &[u8]) {
     assert_eq!(original, tmp);
 }
 
-/** Given a NBTFile, loop around by converting it in the following way
- * Write String -> Read String -> Write NBT -> Read NBT and checks that the
- * resulting NBT enum is identical at each step. */
+/// Given a NBTFile, loop around by converting it in the following way
+/// Write String -> Read String -> Write NBT -> Read NBT and checks that the
+/// resulting NBT enum is identical at each step.
 fn complete_loop_from_enum(original: &NBTFile) {
     let mut tmp = Vec::new();
     ::string_write::write_file(&mut tmp, original).unwrap();
@@ -74,8 +74,8 @@ fn custom_loop() {
     complete_loop_from_nbt(&tests_data::CUSTOM);
 }
 
-/** Tests that we can read the original (gzip compressed) bigtest and that we
- * can loop it around correctly */
+/// Tests that we can read the original (gzip compressed) bigtest and that we
+/// can loop it around correctly
 #[test]
 fn bigtest_original() {
     let mut data = Vec::new();
@@ -85,9 +85,9 @@ fn bigtest_original() {
     complete_loop_from_enum(&nbtfile);
 }
 
-/** Tests that compressed files are read properly, by trying to read BigTest
- * as uncompressed, original (gzip compressed), and Zlib compressed and
- * comparing the resulting NBT. */
+/// Tests that compressed files are read properly, by trying to read BigTest
+/// as uncompressed, original (gzip compressed), and Zlib compressed and
+/// comparing the resulting NBT.
 #[test]
 fn compression_read() {
     let mut data = Vec::new();
@@ -110,8 +110,8 @@ fn compression_read() {
     assert_eq!(nbt_uncompressed.root, nbt_gzip.root);
 }
 
-/** Write an NBTFile to binary format, and then read it again returning the
- * result */
+/// Write an NBTFile to binary format, and then read it again returning the
+/// result
 fn write_read_binary(nbtfile: &NBTFile) -> NBTFile {
     let mut tmp = Vec::new();
     ::write::write_file(&mut tmp, nbtfile).unwrap();
@@ -119,9 +119,9 @@ fn write_read_binary(nbtfile: &NBTFile) -> NBTFile {
     ::read::read_file(&mut cursor).unwrap()
 }
 
-/** Tests that files are compressed properly, by taking hello world and bigtest
- * and trying to write each of them with the two compression algorithms, and
- * then reading them back. */
+/// Tests that files are compressed properly, by taking hello world and bigtest
+/// and trying to write each of them with the two compression algorithms, and
+/// then reading them back.
 #[test]
 fn compression_write() {
     let mut data = Vec::new();

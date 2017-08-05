@@ -5,7 +5,7 @@ use byteorder::WriteBytesExt;
 use std::io;
 use std::io::Write;
 
-/** Given an NBT file, write it to the writer in the pretty text format */
+/// Given an NBT file, write it to the writer in the pretty text format
 pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
     write!(w, "{}", file.compression.to_str())?;
     write_tag(w, &file.root, -1, true)?;

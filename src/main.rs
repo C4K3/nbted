@@ -95,7 +95,7 @@ fn main() {
                  env!("CARGO_PKG_VERSION"),
                  /* See build.rs for the git-revision.txt file */
                  include!(concat!(env!("OUT_DIR"), "/git-revision.txt")));
-        println!("{}", env!("CARGO_PKG_HOMEPAGE"));
+        println!("https://github.com/C4K3/nbted");
         return;
     }
 

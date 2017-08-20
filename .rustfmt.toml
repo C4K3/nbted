@@ -1,3 +1,7 @@
+# Due to the instability of rustfmt, I'm not going to keep it up to date until
+# rustfmt gets a 1.0 release. I do still find it useful to run rustfmt to find
+# weirdly formatted code, and fix it, so this config file will remain.
+
 #write_mode = "diff"
 
 # We want all code within 80 columns, except for that which really can't be

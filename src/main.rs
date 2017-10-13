@@ -6,7 +6,7 @@ extern crate tempdir;
 
 use std::fs::File;
 use std::io;
-use std::io::{BufReader, BufWriter, Write};
+use std::io::{BufReader, BufWriter};
 use std::path::Path;
 use std::env;
 use std::process::exit;
@@ -25,14 +25,6 @@ macro_rules! io_error {
         Err(::std::io::Error::new(::std::io::ErrorKind::InvalidData,
                                   format!($fmtstr, $( $args ),* )));
     };
-}
-
-/// Alternative to println! that prints to stderr instead of stdout
-macro_rules! printerrln {
-    ($fmtstr:tt) => { printerrln!($fmtstr,) };
-    ($fmtstr:tt, $( $args:expr ),* ) => {
-        writeln!(&mut io::stderr(), $fmtstr, $( $args ),* ).silent_unwrap();
-    }
 }
 
 pub mod data;
@@ -225,7 +217,7 @@ fn edit(input: &str, output: &str) {
         let mut new_nbt = open_editor(&tmp_path);
 
         while let Err(e) = new_nbt {
-            printerrln!("Unable to parse edited file: {}.\n\
+            eprintln!("Unable to parse edited file: {}.\n\
             Do you want to open the file for editing again? (y/N)",
                         e.description());
 
@@ -242,7 +234,7 @@ fn edit(input: &str, output: &str) {
             if line.trim() == "y" {
                 new_nbt = open_editor(&tmp_path);
             } else {
-                printerrln!("Exiting ... File is unchanged.");
+                eprintln!("Exiting ... File is unchanged.");
                 std::process::exit(1);
             }
         }
@@ -251,7 +243,7 @@ fn edit(input: &str, output: &str) {
     };
 
     if nbt == new_nbt {
-        printerrln!("No changes, will do nothing.");
+        eprintln!("No changes, will do nothing.");
         return;
     }
 
@@ -284,7 +276,7 @@ fn edit(input: &str, output: &str) {
         }
     }
 
-    printerrln!("File edited successfully.");
+    eprintln!("File edited successfully.");
 }
 
 /// Open the user's $EDITOR on the temporary file, wait until the editor is
@@ -445,8 +437,8 @@ fn reverse(input: &str, output: &str) {
 
 /// Print the given message and exit with status code 1
 fn error(message: &str) -> ! {
-    printerrln!("Error: {}", message);
-    printerrln!("Run with --help for help, or read the manpage.");
+    eprintln!("Error: {}", message);
+    eprintln!("Run with --help for help, or read the manpage.");
     exit(1);
 }
 

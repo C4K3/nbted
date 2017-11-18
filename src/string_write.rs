@@ -8,14 +8,14 @@ use std::io::Write;
 /// Given an NBT file, write it to the writer in the pretty text format
 pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
     write!(w, "{}", file.compression.to_str())?;
-    write_tag(w, &file.root, -1, true)?;
+    write_tag(w, &file.root, 0, true)?;
 
     Ok(())
 }
 
 fn write_tag<W: Write>(w: &mut W,
                        tag: &NBT,
-                       indent: i8,
+                       indent: u64,
                        compound: bool)
                        -> io::Result<()> {
 
@@ -60,7 +60,7 @@ fn write_tag<W: Write>(w: &mut W,
         &NBT::ByteArray(ref x) => {
             writeln!(w, " {}", x.len())?;
             for val in x {
-                write_indent(w, indent + 1)?;
+                write_indent(w, indent)?;
                 writeln!(w, "{}", val)?;
             }
         },
@@ -84,7 +84,7 @@ fn write_tag<W: Write>(w: &mut W,
             for val in x {
                 match val {
                     &NBT::Compound(..) => (),
-                    _ => write_indent(w, indent + 1)?,
+                    _ => write_indent(w, indent)?,
                 }
                 write_tag(w, val, indent + 1, false)?;
             }
@@ -94,7 +94,7 @@ fn write_tag<W: Write>(w: &mut W,
                 writeln!(w, "")?;
             }
             for &(ref key, ref val) in x {
-                write_indent(w, indent + 1)?;
+                write_indent(w, indent)?;
                 w.write_all(val.type_string().as_bytes())?;
                 write!(w,
                        r#" "{}""#,
@@ -103,13 +103,13 @@ fn write_tag<W: Write>(w: &mut W,
                 write_tag(w, val, indent + 1, true)?;
             }
 
-            write_indent(w, indent + 1)?;
+            write_indent(w, indent)?;
             writeln!(w, "End")?;
         },
         &NBT::IntArray(ref x) => {
             writeln!(w, " {}", x.len())?;
             for val in x {
-                write_indent(w, indent + 1)?;
+                write_indent(w, indent)?;
                 writeln!(w, "{}", val)?;
             }
         },
@@ -119,7 +119,7 @@ fn write_tag<W: Write>(w: &mut W,
     Ok(())
 }
 
-fn write_indent<W: Write>(w: &mut W, indent: i8) -> io::Result<()> {
+fn write_indent<W: Write>(w: &mut W, indent: u64) -> io::Result<()> {
     for _ in 0..indent {
         /* 9 = tab character */
         w.write_u8(9)?;

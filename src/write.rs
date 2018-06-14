@@ -8,7 +8,9 @@ use byteorder::{BigEndian, WriteBytesExt};
 use flate2;
 use flate2::write::{GzEncoder, ZlibEncoder};
 
-const COMPRESSION_LEVEL: flate2::Compression = flate2::Compression::Default;
+macro_rules! compression_level {
+    () => { flate2::Compression::default() };
+}
 
 /// Given an NBT file, write it as a binary NBT file to the writer
 pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
@@ -20,12 +22,12 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
     match file.compression {
         Compression::None => write_compound(w, &map, false)?,
         Compression::Gzip => {
-            let mut w = GzEncoder::new(w, COMPRESSION_LEVEL);
+            let mut w = GzEncoder::new(w, compression_level!());
             write_compound(&mut w, map, false)?;
             let _: &mut W = w.finish()?;
         },
         Compression::Zlib => {
-            let mut w = ZlibEncoder::new(w, COMPRESSION_LEVEL);
+            let mut w = ZlibEncoder::new(w, compression_level!());
             write_compound(&mut w, map, false)?;
             let _: &mut W = w.finish()?;
         },

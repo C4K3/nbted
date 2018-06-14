@@ -29,7 +29,7 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
 
     let root = match compression {
         Compression::None => read_compound(&mut reader)?,
-        Compression::Gzip => read_compound(&mut GzDecoder::new(reader)?)?,
+        Compression::Gzip => read_compound(&mut GzDecoder::new(reader))?,
         Compression::Zlib => read_compound(&mut ZlibDecoder::new(reader))?,
     };
 

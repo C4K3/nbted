@@ -91,48 +91,77 @@ fn main() {
         return;
     }
 
+    let is_print: bool = matches.opt_present("print");
+    let is_reverse: bool = matches.opt_present("reverse");
+    let is_edit: bool = if matches.opt_present("edit") {
+        true
+    } else {
+        /* If edit is not explicitly defined, it is the default action and is
+         * selected if no other action is specified */
+        (!(is_reverse || is_print))
+    };
+
+    /* Hopefully this is a simpler way of ensuring that only one action can be
+     * taken than having a long logical expression */
+    let mut action_count = 0;
+    if is_print {
+        action_count += 1;
+    }
+    if is_reverse {
+        action_count += 1;
+    }
+    if is_edit {
+        action_count += 1;
+    }
+    if action_count > 1 {
+        error("You can only specify one action a time.");
+    }
+
     /* Figure out the input file, by trying to read the arguments for all of
      * --input, --edit, --print and --reverse, prioritizing --input over the
      * other arguments, if none of the arguments are specified but there is a
      * free argument, use that, else we finally default to - (stdin) */
-    let input = match matches.opt_str("input") {
-        Some(x) => x,
-        None => {
-            match matches.opts_str(&["edit".to_string(),
-                                     "print".to_string(),
-                                     "reverse".to_string()]) {
-
-                Some(x) => x,
-                None if matches.free.len() > 0 => matches.free[0].clone(),
-                None => "-".to_string(),
-            }
-        },
+    let input = if let Some(x) = matches.opt_str("input") {
+        x
+    } else if let Some(x) = matches.opt_str("edit") {
+        x
+    } else if let Some(x) = matches.opt_str("print") {
+        x
+    } else if let Some(x) = matches.opt_str("reverse") {
+        x
+    } else if matches.free.len() == 1 {
+        matches.free[0].clone()
+    } else {
+        /* stdin */
+        "-".to_string()
     };
 
-    /* Analogous to the input */
-    let output = match matches.opt_str("output") {
-        Some(x) => x,
-        None => {
-            match matches.opt_str("edit") {
-                Some(x) => x,
-                None if matches.free.len() > 0 => matches.free[0].clone(),
-                None => "-".to_string(),
-            }
-        },
+    let output = if let Some(x) = matches.opt_str("output") {
+        x
+    } else if let Some(x) = matches.opt_str("edit") {
+        x
+    } else if is_edit && matches.free.len() == 1 {
+        /* Only want to default to the free argument if we're editing
+         * (DO NOT WRITE BACK TO THE READ FILE UNLESS EDITING!) */
+        matches.free[0].clone()
+    } else {
+        /* stdout */
+        "-".to_string()
     };
 
-    if matches.opt_present("print") {
+    if matches.free.len() > 1 {
+        error("nbted was given multiple arguments, but only supports editing one file at a time.");
+    }
+
+    if is_print {
         print(&input, &output);
-        return;
-    }
-
-    if matches.opt_present("reverse") {
+    } else if is_reverse {
         reverse(&input, &output);
-        return;
+    } else if is_edit {
+        edit(&input, &output);
+    } else {
+        eprintln!("Internal error: No action selected. (Please report this.)");
     }
-
-    /* Default to --edit */
-    edit(&input, &output);
 }
 
 /// When the user wants to edit a specific file in place

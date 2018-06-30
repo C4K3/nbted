@@ -81,7 +81,10 @@ fn run_cmdline() -> Result<i32> {
     let matches = opts.parse(&args[1..]).chain_err(|| "error parsing options")?;
 
     if matches.opt_present("h") {
-        print_usage(opts);
+        let brief = "Usage: nbted [options] FILE";
+        print!("{}", opts.usage(&brief));
+        println!("\nThe default action, taken if no action is explicitly selected, is to --edit.");
+        println!("\nFor detailed usage information, read the manpage.");
         return Ok(0);
     }
 
@@ -376,11 +379,4 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
     }
 
     Ok(0)
-}
-
-fn print_usage(opts: Options) {
-    let brief = "Usage: nbted [options] FILE";
-    print!("{}", opts.usage(&brief));
-    println!("\nThe default action, taken if no action is explicitly selected, is to --edit.");
-    println!("\nFor detailed usage information, read the manpage.");
 }

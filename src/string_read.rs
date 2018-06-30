@@ -1,6 +1,6 @@
 use data::{Compression, NBT, NBTFile};
+use errors::{Result, ResultExt};
 
-use std::io;
 use std::io::Read;
 
 use regex::Regex;
@@ -19,25 +19,22 @@ impl Cursor {
         }
     }
     /// Gets the next item, pushing the index one forward
-    fn next(&mut self) -> io::Result<&str> {
+    fn next(&mut self) -> Result<&str> {
         match self.inner.get(self.index) {
             Some(ref x) => {
                 self.index += 1;
                 Ok(x)
             },
-            None => io_error!("Tried to read beyond Cursor"),
+            None => bail!("Tried to read beyond Cursor"),
         }
     }
 }
 
 /// Read an NBT file from the reader, in the pretty text format
-pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
+pub fn read_file<R: Read>(reader: &mut R) -> Result<NBTFile> {
     let mut buf = Vec::new();
     let _: usize = reader.read_to_end(&mut buf)?;
-    let string = match String::from_utf8(buf) {
-        Ok(x) => x,
-        Err(_) => return io_error!("Unable to parse string as valid UTF-8"),
-    };
+    let string = String::from_utf8(buf).chain_err(|| "Unable to parse string as valid UTF-8")?;
 
     /* We want to make a Vec<String> of all the items in the pretty text
      * format, where an item is defined as a Type, Length or other atomic
@@ -60,7 +57,7 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
             Some(x) => x.as_str().replace(r#"\""#, r#"""#).replace(r"\\", r"\"),
             None => match cap.get(2) {
                 Some(x) => x.as_str().to_string(),
-                None => return io_error!("Capture did not match regex"),
+                None => bail!("Capture did not match regex"),
             },
         });
     }
@@ -68,7 +65,7 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
     if tags.len() < 2 {
         /* There has to be at least 2 tags: The compression, and the End tag
          * for the implicit compound */
-        return io_error!("Invalid text file, too short");
+        bail!("Invalid text file, too short");
     }
 
     let mut cursor = Cursor::new(tags);
@@ -78,7 +75,7 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
 
         match Compression::from_str(tmp) {
             Some(x) => x,
-            None => return io_error!("Unknown compression format {}", tmp),
+            None => bail!("Unknown compression format {}", tmp),
         }
     };
 
@@ -90,7 +87,7 @@ pub fn read_file<R: Read>(reader: &mut R) -> io::Result<NBTFile> {
        })
 }
 
-fn read_tag(tags: &mut Cursor, tag_type: &str) -> io::Result<NBT> {
+fn read_tag(tags: &mut Cursor, tag_type: &str) -> Result<NBT> {
     match tag_type {
         "Byte" => read_byte(tags),
         "Short" => read_short(tags),
@@ -103,59 +100,47 @@ fn read_tag(tags: &mut Cursor, tag_type: &str) -> io::Result<NBT> {
         "List" => read_list(tags),
         "Compound" => read_compound(tags),
         "IntArray" => read_int_array(tags),
-        _ => io_error!("Unknown tag type {}", tag_type),
+        x => bail!("Unknown tag type {}", x),
     }
 }
 
-fn read_byte(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_byte(tags: &mut Cursor) -> Result<NBT> {
     let val = tags.next()?;
-    match val.parse::<i8>() {
-        Ok(x) => Ok(NBT::Byte(x)),
-        Err(_) => io_error!("Invalid Byte {}", val),
-    }
+    let val = val.parse::<i8>().chain_err(|| format!("Invalid Byte {}", val))?;
+    Ok(NBT::Byte(val))
 }
 
-fn read_short(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_short(tags: &mut Cursor) -> Result<NBT> {
     let val = tags.next()?;
-    match val.parse::<i16>() {
-        Ok(x) => Ok(NBT::Short(x)),
-        Err(_) => io_error!("Invalid Short {}", val),
-    }
+    let val = val.parse::<i16>().chain_err(|| format!("Invalid Short {}", val))?;
+    Ok(NBT::Short(val))
 }
 
-fn read_int(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_int(tags: &mut Cursor) -> Result<NBT> {
     let val = tags.next()?;
-    match val.parse::<i32>() {
-        Ok(x) => Ok(NBT::Int(x)),
-        Err(_) => io_error!("Invalid Int {}", val),
-    }
+    let val = val.parse::<i32>().chain_err(|| format!("Invalid Int {}", val))?;
+    Ok(NBT::Int(val))
 }
 
-fn read_long(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_long(tags: &mut Cursor) -> Result<NBT> {
     let val = tags.next()?;
-    match val.parse::<i64>() {
-        Ok(x) => Ok(NBT::Long(x)),
-        Err(_) => io_error!("Invalid Long {}", val),
-    }
+    let val = val.parse::<i64>().chain_err(|| format!("Invalid Long {}", val))?;
+    Ok(NBT::Long(val))
 }
 
-fn read_float(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_float(tags: &mut Cursor) -> Result<NBT> {
     let val = tags.next()?;
-    match val.parse::<f32>() {
-        Ok(x) => Ok(NBT::Float(x)),
-        Err(_) => io_error!("Invalid Float {}", val),
-    }
+    let val = val.parse::<f32>().chain_err(|| format!("Invalid Float {}", val))?;
+    Ok(NBT::Float(val))
 }
 
-fn read_double(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_double(tags: &mut Cursor) -> Result<NBT> {
     let val = tags.next()?;
-    match val.parse::<f64>() {
-        Ok(x) => Ok(NBT::Double(x)),
-        Err(_) => io_error!("Invalid Double {}", val),
-    }
+    let val = val.parse::<f64>().chain_err(|| format!("Invalid Double {}", val))?;
+    Ok(NBT::Double(val))
 }
 
-fn read_byte_array(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_byte_array(tags: &mut Cursor) -> Result<NBT> {
     let len = match read_int(tags)? {
         NBT::Int(x) => x,
         _ => unreachable!(),
@@ -170,11 +155,11 @@ fn read_byte_array(tags: &mut Cursor) -> io::Result<NBT> {
     Ok(NBT::ByteArray(tmp))
 }
 
-fn read_string(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_string(tags: &mut Cursor) -> Result<NBT> {
     Ok(NBT::String(tags.next()?.to_string()))
 }
 
-fn read_list(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_list(tags: &mut Cursor) -> Result<NBT> {
     let list_type = tags.next()?.to_string();
     let len = match read_int(tags)? {
         NBT::Int(x) => x,
@@ -188,7 +173,7 @@ fn read_list(tags: &mut Cursor) -> io::Result<NBT> {
     Ok(NBT::List(tmp))
 }
 
-fn read_compound(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_compound(tags: &mut Cursor) -> Result<NBT> {
     let mut map = Vec::new();
 
     loop {
@@ -209,7 +194,7 @@ fn read_compound(tags: &mut Cursor) -> io::Result<NBT> {
     Ok(NBT::Compound(map))
 }
 
-fn read_int_array(tags: &mut Cursor) -> io::Result<NBT> {
+fn read_int_array(tags: &mut Cursor) -> Result<NBT> {
     let len = match read_int(tags)? {
         NBT::Int(x) => x,
         _ => unreachable!(),

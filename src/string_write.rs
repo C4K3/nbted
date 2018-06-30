@@ -1,12 +1,12 @@
 use data::{NBT, NBTFile};
+use errors::Result;
 
 use byteorder::WriteBytesExt;
 
-use std::io;
 use std::io::Write;
 
 /// Given an NBT file, write it to the writer in the pretty text format
-pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
+pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
     write!(w, "{}", file.compression.to_str())?;
     write_tag(w, &file.root, 0, true)?;
 
@@ -17,7 +17,7 @@ fn write_tag<W: Write>(w: &mut W,
                        tag: &NBT,
                        indent: u64,
                        compound: bool)
-                       -> io::Result<()> {
+                       -> Result<()> {
 
     match tag {
         &NBT::End => (),
@@ -119,7 +119,7 @@ fn write_tag<W: Write>(w: &mut W,
     Ok(())
 }
 
-fn write_indent<W: Write>(w: &mut W, indent: u64) -> io::Result<()> {
+fn write_indent<W: Write>(w: &mut W, indent: u64) -> Result<()> {
     for _ in 0..indent {
         /* 9 = tab character */
         w.write_u8(9)?;

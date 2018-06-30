@@ -1,6 +1,6 @@
 use data::{Compression, NBT, NBTFile};
+use errors::Result;
 
-use std::io;
 use std::io::Write;
 
 use byteorder::{BigEndian, WriteBytesExt};
@@ -13,7 +13,7 @@ macro_rules! compression_level {
 }
 
 /// Given an NBT file, write it as a binary NBT file to the writer
-pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
+pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
     let map = match file.root {
         NBT::Compound(ref x) => x,
         _ => unreachable!(),
@@ -36,7 +36,7 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> io::Result<()> {
     Ok(())
 }
 
-fn write_tag<W: Write>(w: &mut W, tag: &NBT) -> io::Result<()> {
+fn write_tag<W: Write>(w: &mut W, tag: &NBT) -> Result<()> {
     match tag {
         &NBT::End => panic!("Unable to write End tag"),
         &NBT::Byte(x) => write_byte(w, x),
@@ -53,31 +53,31 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT) -> io::Result<()> {
     }
 }
 
-fn write_byte<W: Write>(w: &mut W, val: i8) -> io::Result<()> {
-    w.write_i8(val)
+fn write_byte<W: Write>(w: &mut W, val: i8) -> Result<()> {
+    w.write_i8(val).map_err(|e| e.into())
 }
 
-fn write_short<W: Write>(w: &mut W, val: i16) -> io::Result<()> {
-    w.write_i16::<BigEndian>(val)
+fn write_short<W: Write>(w: &mut W, val: i16) -> Result<()> {
+    w.write_i16::<BigEndian>(val).map_err(|e| e.into())
 }
 
-fn write_int<W: Write>(w: &mut W, val: i32) -> io::Result<()> {
-    w.write_i32::<BigEndian>(val)
+fn write_int<W: Write>(w: &mut W, val: i32) -> Result<()> {
+    w.write_i32::<BigEndian>(val).map_err(|e| e.into())
 }
 
-fn write_long<W: Write>(w: &mut W, val: i64) -> io::Result<()> {
-    w.write_i64::<BigEndian>(val)
+fn write_long<W: Write>(w: &mut W, val: i64) -> Result<()> {
+    w.write_i64::<BigEndian>(val).map_err(|e| e.into())
 }
 
-fn write_float<W: Write>(w: &mut W, val: f32) -> io::Result<()> {
-    w.write_f32::<BigEndian>(val)
+fn write_float<W: Write>(w: &mut W, val: f32) -> Result<()> {
+    w.write_f32::<BigEndian>(val).map_err(|e| e.into())
 }
 
-fn write_double<W: Write>(w: &mut W, val: f64) -> io::Result<()> {
-    w.write_f64::<BigEndian>(val)
+fn write_double<W: Write>(w: &mut W, val: f64) -> Result<()> {
+    w.write_f64::<BigEndian>(val).map_err(|e| e.into())
 }
 
-fn write_byte_array<W: Write>(w: &mut W, val: &Vec<i8>) -> io::Result<()> {
+fn write_byte_array<W: Write>(w: &mut W, val: &Vec<i8>) -> Result<()> {
     write_int(w, val.len() as i32)?;
 
     for x in val {
@@ -87,13 +87,13 @@ fn write_byte_array<W: Write>(w: &mut W, val: &Vec<i8>) -> io::Result<()> {
     Ok(())
 }
 
-fn write_string<W: Write>(w: &mut W, val: &String) -> io::Result<()> {
+fn write_string<W: Write>(w: &mut W, val: &String) -> Result<()> {
     let bytes = val.as_bytes();
     w.write_u16::<BigEndian>(bytes.len() as u16)?;
-    w.write_all(bytes)
+    w.write_all(bytes).map_err(|e| e.into())
 }
 
-fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> io::Result<()> {
+fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> Result<()> {
     /* If the list has length 0, then it just defaults to type "End". */
     let tag_type = if val.len() > 0 {
         val[0].type_byte()
@@ -113,7 +113,7 @@ fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> io::Result<()> {
 fn write_compound<W: Write>(w: &mut W,
                             map: &Vec<(String, NBT)>,
                             end: bool)
-                            -> io::Result<()> {
+                            -> Result<()> {
     for &(ref key, ref tag) in map {
         w.write_all(&[tag.type_byte()])?;
         write_string(w, key)?;
@@ -128,7 +128,7 @@ fn write_compound<W: Write>(w: &mut W,
     Ok(())
 }
 
-fn write_int_array<W: Write>(w: &mut W, val: &Vec<i32>) -> io::Result<()> {
+fn write_int_array<W: Write>(w: &mut W, val: &Vec<i32>) -> Result<()> {
     write_int(w, val.len() as i32)?;
 
     for x in val {

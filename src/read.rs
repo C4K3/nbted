@@ -1,6 +1,6 @@
 use data::{Compression, NBT, NBTFile};
+use errors::{Result, ResultExt};
 
-use std::error::Error;
 use std::io::{self, BufRead, Read};
 
 use byteorder::{BigEndian, ReadBytesExt};
@@ -8,21 +8,21 @@ use byteorder::{BigEndian, ReadBytesExt};
 use flate2::read::{GzDecoder, ZlibDecoder};
 
 /// Read an NBT file from the given reader
-pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
+pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
     /* Peek into the first byte of the reader, which is used to determine the
      * compression */
     let peek = match reader.fill_buf() {
         Ok(x) if x.len() >= 1 => x[0],
         Ok(_) => {
-            return io_error!("Error peaking first byte in read::read_file, file was EOF",)
+            bail!("Error peaking first byte in read::read_file, file was EOF")
         },
-        Err(e) => return Err(e),
+        Err(e) => return Err(e.into()),
     };
 
     let compression = match Compression::from_first_byte(peek) {
         Some(x) => x,
         None => {
-            return io_error!("Unknown compression format where first byte is {}",
+            bail!("Unknown compression format where first byte is {}",
                              peek)
         },
     };
@@ -44,7 +44,7 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> io::Result<NBTFile> {
 /// compound we're in.
 ///
 /// This will always return an NBT::Compound, never any other type of NBT.
-fn read_compound<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
     let mut map = Vec::new();
 
     loop {
@@ -57,7 +57,7 @@ fn read_compound<R: Read>(reader: &mut R) -> io::Result<NBT> {
                 break;
             },
             Err(e) => {
-                return Err(e);
+                return Err(e.into());
             },
         }
 
@@ -83,8 +83,7 @@ fn read_compound<R: Read>(reader: &mut R) -> io::Result<NBT> {
                 0x09 => read_list(reader)?,
                 0x0a => read_compound(reader)?,
                 0x0b => read_int_array(reader)?,
-                _ => return io_error!(
-                    "Got unknown type id trying to read NBT compound")
+                _ => bail!("Got unknown type id trying to read NBT compound"),
             }
             ));
     }
@@ -92,31 +91,31 @@ fn read_compound<R: Read>(reader: &mut R) -> io::Result<NBT> {
     Ok(NBT::Compound(map))
 }
 
-fn read_byte<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_byte<R: Read>(reader: &mut R) -> Result<NBT> {
     Ok(NBT::Byte(reader.read_i8()?))
 }
 
-fn read_short<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_short<R: Read>(reader: &mut R) -> Result<NBT> {
     Ok(NBT::Short(reader.read_i16::<BigEndian>()?))
 }
 
-fn read_int<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_int<R: Read>(reader: &mut R) -> Result<NBT> {
     Ok(NBT::Int(reader.read_i32::<BigEndian>()?))
 }
 
-fn read_long<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_long<R: Read>(reader: &mut R) -> Result<NBT> {
     Ok(NBT::Long(reader.read_i64::<BigEndian>()?))
 }
 
-fn read_float<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_float<R: Read>(reader: &mut R) -> Result<NBT> {
     Ok(NBT::Float(reader.read_f32::<BigEndian>()?))
 }
 
-fn read_double<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_double<R: Read>(reader: &mut R) -> Result<NBT> {
     Ok(NBT::Double(reader.read_f64::<BigEndian>()?))
 }
 
-fn read_byte_array<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_byte_array<R: Read>(reader: &mut R) -> Result<NBT> {
     let length = match read_int(reader)? {
         NBT::Int(val) => val as usize,
         _ => unreachable!(),
@@ -135,7 +134,7 @@ fn read_byte_array<R: Read>(reader: &mut R) -> io::Result<NBT> {
     Ok(NBT::ByteArray(ret))
 }
 
-fn read_string<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_string<R: Read>(reader: &mut R) -> Result<NBT> {
     /* Apparently the length of a string is given unsigned unlike everything
      * else in NBT */
     let length = reader.read_u16::<BigEndian>()?;
@@ -143,19 +142,15 @@ fn read_string<R: Read>(reader: &mut R) -> io::Result<NBT> {
     let mut buf = Vec::with_capacity(length as usize);
     let tmp = reader.take(length as u64).read_to_end(&mut buf)?;
     if tmp != length as usize {
-        return io_error!("Error reading string length");
+        bail!("Error reading string length");
     }
 
-    match String::from_utf8(buf) {
-        Ok(val) => Ok(NBT::String(val)),
-        Err(e) => {
-            io_error!("Unable to read string, invalid UTF-8 encoding: {}",
-                      e.description())
-        },
-    }
+    let val = String::from_utf8(buf)
+        .chain_err(|| "Unable to read String, invalid UTF-8 encoding")?;
+    Ok(NBT::String(val))
 }
 
-fn read_list<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_list<R: Read>(reader: &mut R) -> Result<NBT> {
     let mut type_id: [u8; 1] = [0];
     reader.read_exact(&mut type_id)?;
 
@@ -179,14 +174,14 @@ fn read_list<R: Read>(reader: &mut R) -> io::Result<NBT> {
             0x9 => read_list(reader)?,
             0xa => read_compound(reader)?,
             0xb => read_int_array(reader)?,
-            _ => return io_error!("Got unknown type id trying to read NBT list")
+            x => bail!("Got unknown type id {:x} trying to read NBT list", x),
         });
     }
 
     Ok(NBT::List(ret))
 }
 
-fn read_int_array<R: Read>(reader: &mut R) -> io::Result<NBT> {
+fn read_int_array<R: Read>(reader: &mut R) -> Result<NBT> {
     let length = match read_int(reader)? {
         NBT::Int(val) => val as usize,
         _ => unreachable!(),

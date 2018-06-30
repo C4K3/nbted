@@ -11,12 +11,11 @@ use flate2::read::{GzDecoder, ZlibDecoder};
 pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
     /* Peek into the first byte of the reader, which is used to determine the
      * compression */
-    let peek = match reader.fill_buf() {
-        Ok(x) if x.len() >= 1 => x[0],
-        Ok(_) => {
+    let peek = match reader.fill_buf()? {
+        x if x.len() >= 1 => x[0],
+        _ => {
             bail!("Error peaking first byte in read::read_file, file was EOF")
         },
-        Err(e) => return Err(e.into()),
     };
 
     let compression = match Compression::from_first_byte(peek) {
@@ -83,7 +82,9 @@ fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
                 0x09 => read_list(reader)?,
                 0x0a => read_compound(reader)?,
                 0x0b => read_int_array(reader)?,
-                _ => bail!("Got unknown type id trying to read NBT compound"),
+                x => {
+                    bail!("Got unknown type id {:x} trying to read NBT compound", x);
+                },
             }
             ));
     }

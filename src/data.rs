@@ -1,4 +1,4 @@
-/// Represents a single NBT tab
+/// Represents a single NBT tag
 #[derive(Clone, PartialEq, Debug)]
 pub enum NBT {
     End,
@@ -83,10 +83,7 @@ impl Compression {
     /// is known, and None else.
     pub fn from_first_byte(byte: u8) -> Option<Self> {
         /* On compression: To identify how an nbt file is compressed, peek
-         * at the first byte in the file, with the following meanings:
-         * 0x0a for no compression
-         * 0x1f gzip compressed
-         * 0x78 zlib compressed */
+         * at the first byte in the file, with the following meanings: */
         match byte {
             0x0a => Some(Compression::None),
             0x1f => Some(Compression::Gzip),

@@ -58,6 +58,9 @@ fn main() {
     }
 }
 
+/// Main entrypoint for program.
+///
+/// Returns an integer representing the program's exit status.
 fn run_cmdline() -> Result<i32> {
     let args: Vec<String> = env::args().collect();
 
@@ -172,6 +175,8 @@ fn run_cmdline() -> Result<i32> {
 }
 
 /// When the user wants to edit a specific file in place
+///
+/// Returns an integer representing the program's exit status.
 fn edit(input: &str, output: &str) -> Result<i32> {
 
     /* First we read the NBT data from the input */
@@ -250,6 +255,10 @@ fn edit(input: &str, output: &str) -> Result<i32> {
     if output == "-" {
         let f = io::stdout();
         let mut f = f.lock();
+        /* If we get an error writing to stdout, we want to just silently exit
+         * with exit code 1. (It can generally be assumed that nbted will not
+         * error in serializing the data, so any error here would be because of
+         * writing to stdout) */
         match write::write_file(&mut f, &new_nbt) {
             Ok(()) => (),
             Err(_) => return Ok(1),
@@ -327,6 +336,10 @@ fn print(input: &str, output: &str) -> Result<i32> {
     if output == "-" {
         let f = io::stdout();
         let mut f = f.lock();
+        /* If we get an error writing to stdout, we want to just silently exit
+         * with exit code 1. (It can generally be assumed that nbted will not
+         * error in serializing the data, so any error here would be because of
+         * writing to stdout) */
         match string_write::write_file(&mut f, &nbt) {
             Ok(()) => (),
             Err(_) => return Ok(1),
@@ -347,6 +360,8 @@ fn print(input: &str, output: &str) -> Result<i32> {
 }
 
 /// When the user wants to convert a text format file into an NBT file
+///
+/// Returns an integer representing the program's exit status.
 fn reverse(input: &str, output: &str) -> Result<i32> {
     /* First we read the input file in the text format */
     let path: &Path = Path::new(input);
@@ -362,6 +377,10 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
     if output == "-" {
         let f = io::stdout();
         let mut f = f.lock();
+        /* If we get an error writing to stdout, we want to just silently exit
+         * with exit code 1. (It can generally be assumed that nbted will not
+         * error in serializing the data, so any error here would be because of
+         * writing to stdout) */
         match write::write_file(&mut f, &nbt) {
             Ok(()) => (),
             Err(_) => return Ok(1),

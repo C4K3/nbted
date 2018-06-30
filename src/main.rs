@@ -124,7 +124,7 @@ fn run_cmdline() -> Result<i32> {
         action_count += 1;
     }
     if action_count > 1 {
-        bail!("You can only specify one action a time.");
+        bail!("You can only specify one action at a time.");
     }
 
     /* Figure out the input file, by trying to read the arguments for all of

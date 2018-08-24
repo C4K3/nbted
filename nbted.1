@@ -1,4 +1,4 @@
-.TH NBTED 1 "2018-06-14"
+.TH NBTED 1 "2018-08-24"
 .SH NAME
 nbted \- edit NBT files
 .SH SYNOPSIS
@@ -44,6 +44,11 @@ specify the input file, defaults to stdin (\-)
 .TP
 .BR \-o ", " \-\-output " "[\fIFILE\fR]
 specify the output file, defaults to stdout (\-)
+.TP
+.BR \-\-man
+print the source of the nbted man page,
+such that it can be used to read the man page even if the man page was not
+installed on your system, e.g. by running \fBnbted --man | nroff -man | less\fR
 .TP
 .BR \-h ", " \-\-help
 print help information and exit

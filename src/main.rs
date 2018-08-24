@@ -78,8 +78,9 @@ fn run_cmdline() -> Result<i32> {
                 "output",
                 "specify the output file, defaults to stdout",
                 "FILE");
-    opts.optflag("h", "help", "print the help menu");
-    opts.optflag("", "version", "print program version");
+    opts.optflag("", "man", "print the nbted man page source and exit");
+    opts.optflag("h", "help", "print the help menu and exit");
+    opts.optflag("", "version", "print program version and exit");
 
     let matches = opts.parse(&args[1..]).chain_err(|| "error parsing options")?;
 
@@ -87,7 +88,9 @@ fn run_cmdline() -> Result<i32> {
         let brief = "Usage: nbted [options] FILE";
         print!("{}", opts.usage(&brief));
         println!("\nThe default action, taken if no action is explicitly selected, is to --edit.");
-        println!("\nFor detailed usage information, read the manpage.");
+        println!("\nFor detailed usage information, read the nbted man page. If the nbted man page\
+        \nwas not installed on your system, such as if you installed using `cargo install`,\
+        \nthen you can use `nbted --man | nroff -man | less` to read the nbted man page.");
         return Ok(0);
     }
 
@@ -98,6 +101,11 @@ fn run_cmdline() -> Result<i32> {
                  /* See build.rs for the git-revision.txt file */
                  include!(concat!(env!("OUT_DIR"), "/git-revision.txt")));
         println!("https://github.com/C4K3/nbted");
+        return Ok(0);
+    }
+
+    if matches.opt_present("man") {
+        print!(include_str!("../nbted.1"));
         return Ok(0);
     }
 

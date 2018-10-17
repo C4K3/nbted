@@ -38,7 +38,7 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
 
 fn write_tag<W: Write>(w: &mut W, tag: &NBT) -> Result<()> {
     match tag {
-        &NBT::End => panic!("Unable to write End tag"),
+        &NBT::End => bail!("Unable to write End tag"),
         &NBT::Byte(x) => write_byte(w, x),
         &NBT::Short(x) => write_short(w, x),
         &NBT::Int(x) => write_int(w, x),

@@ -1,5 +1,4 @@
 extern crate byteorder;
-extern crate regex;
 extern crate flate2;
 extern crate getopts;
 extern crate tempdir;
@@ -30,7 +29,8 @@ mod errors {
     error_chain!{
         foreign_links {
             Io(::std::io::Error);
-            FromUtf8(::std::string::FromUtf8Error);
+            FromUtf8String(::std::string::FromUtf8Error);
+            FromUtf8Str(::std::str::Utf8Error);
         }
     }
 }

@@ -3,6 +3,7 @@ use std::io::Cursor;
 use data::{Compression, NBTFile};
 
 mod tests_data;
+mod string_read;
 
 /// Given some NBT data in original format, loops it around by converting it
 /// in the following way: Read NBT -> Write String -> Read String -> Write NBT

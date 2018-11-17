@@ -1,0 +1,10 @@
+image: archlinux
+packages:
+        - cargo
+        - rust
+sources:
+        - https://git.sr.ht/~c4k3/nbted
+tasks:
+        - build: |
+                cd nbted
+                cargo test

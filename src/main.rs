@@ -1,3 +1,12 @@
+#![warn(unused_results,
+        unused_extern_crates,
+        unused_import_braces,
+        unused_qualifications,
+        variant_size_differences,
+        trivial_casts,
+        trivial_numeric_casts,
+        )]
+
 extern crate byteorder;
 extern crate flate2;
 extern crate getopts;
@@ -65,22 +74,22 @@ fn run_cmdline() -> Result<i32> {
     let args: Vec<String> = env::args().collect();
 
     let mut opts = Options::new();
-    opts.optflagopt("e", "edit", "edit a NBT file with your $EDITOR.
+    let _: &Options = opts.optflagopt("e", "edit", "edit a NBT file with your $EDITOR.
     If [FILE] is specified, then that file is edited in place, but specifying --input and/or --output will override the input/output.
     If no file is specified, default to read from --input and writing to --output.", "FILE");
-    opts.optflagopt("p", "print", "print NBT file to text format. Adding an argument to this is the same as specifying --input", "FILE");
-    opts.optflagopt("r", "reverse", "reverse a file in text format to NBT format. Adding an argument to this is the same as specifying --input", "FILE");
-    opts.optopt("i",
+    let _: &Options = opts.optflagopt("p", "print", "print NBT file to text format. Adding an argument to this is the same as specifying --input", "FILE");
+    let _: &Options = opts.optflagopt("r", "reverse", "reverse a file in text format to NBT format. Adding an argument to this is the same as specifying --input", "FILE");
+    let _: &Options = opts.optopt("i",
                 "input",
                 "specify the input file, defaults to stdin",
                 "FILE");
-    opts.optopt("o",
+    let _: &Options = opts.optopt("o",
                 "output",
                 "specify the output file, defaults to stdout",
                 "FILE");
-    opts.optflag("", "man", "print the nbted man page source and exit");
-    opts.optflag("h", "help", "print the help menu and exit");
-    opts.optflag("", "version", "print program version and exit");
+    let _: &Options = opts.optflag("", "man", "print the nbted man page source and exit");
+    let _: &Options = opts.optflag("h", "help", "print the help menu and exit");
+    let _: &Options = opts.optflag("", "version", "print program version and exit");
 
     let matches = opts.parse(&args[1..]).chain_err(|| "error parsing options")?;
 
@@ -240,7 +249,7 @@ fn edit(input: &str, output: &str) -> Result<i32> {
             eprintln!("Do you want to open the file for editing again? (y/N)");
 
             let mut line = String::new();
-            io::stdin().read_line(&mut line)
+            let _: usize = io::stdin().read_line(&mut line)
                 .chain_err(|| "Error reading from stdin. Nothing was changed")?;
 
             if line.trim() == "y" {
@@ -302,7 +311,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
     };
 
     let mut cmd = Command::new(editor);
-    cmd.arg(&tmp_path.as_os_str());
+    let _: &mut Command = cmd.arg(&tmp_path.as_os_str());
     let mut cmd = cmd.spawn().chain_err(|| "Error opening editor")?;
 
     match cmd.wait() {

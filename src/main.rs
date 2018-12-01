@@ -243,7 +243,7 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 
         while let Err(e) = new_nbt {
             eprintln!("Unable to parse edited file");
-            for e in e.iter() {
+            for e in e.iter().collect::<Vec<&dyn std::error::Error>>().iter().rev() {
                 eprintln!("	caused by: {}", e);
             }
             eprintln!("Do you want to open the file for editing again? (y/N)");

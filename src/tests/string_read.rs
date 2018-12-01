@@ -37,7 +37,7 @@ fn empty_file() {
 fn text_file_with_no_trailing_bytes() {
     /* I experienced an error with the new tokenizer where it would ignore the
      * last tag unless there was at least 1 byte following it */
-    try_parse_string("None End").unwrap();
+    let _: NBTFile = try_parse_string("None End").unwrap();
 }
 
 #[test]
@@ -76,5 +76,5 @@ fn unquoted_string() {
      * become valid syntax. I'm not sure if I want to keep this valid or not,
      * so I'll leave it undocumented except for this test testing that they are
      * parsed */
-    try_parse_string(r#"None Compound ForgotQuotationMarksAroundThisString End End"#).unwrap();
+    let _: NBTFile = try_parse_string(r#"None Compound ForgotQuotationMarksAroundThisString End End"#).unwrap();
 }

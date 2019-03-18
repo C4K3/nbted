@@ -1,5 +1,5 @@
-use data::{Compression, NBT, NBTFile};
-use errors::{Result, ResultExt};
+use crate::data::{Compression, NBT, NBTFile};
+use crate::errors::{Result, ResultExt};
 
 use std::io::{self, BufRead, Read};
 

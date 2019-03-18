@@ -1,6 +1,6 @@
 use std::io::Cursor;
 
-use data::{Compression, NBTFile};
+use crate::data::{Compression, NBTFile};
 
 mod tests_data;
 mod string_read;
@@ -13,20 +13,20 @@ mod string_read;
 fn complete_loop_from_nbt(nbt: &[u8]) {
     let mut original = Vec::new();
     original.extend_from_slice(nbt);
-    let nbtfile1 = ::read::read_file(&mut Cursor::new(original.clone()))
+    let nbtfile1 = crate::read::read_file(&mut Cursor::new(original.clone()))
         .unwrap();
 
     let mut tmp = Vec::new();
-    ::string_write::write_file(&mut tmp, &nbtfile1).unwrap();
+    crate::string_write::write_file(&mut tmp, &nbtfile1).unwrap();
     let string: String = String::from_utf8(tmp).unwrap();
 
     let mut cursor = Cursor::new(string.into_bytes());
-    let nbtfile2 = ::string_read::read_file(&mut cursor).unwrap();
+    let nbtfile2 = crate::string_read::read_file(&mut cursor).unwrap();
 
     assert_eq!(&nbtfile1, &nbtfile2);
 
     let mut tmp = Vec::new();
-    ::write::write_file(&mut tmp, &nbtfile2).unwrap();
+    crate::write::write_file(&mut tmp, &nbtfile2).unwrap();
 
     assert_eq!(original, tmp);
 }
@@ -36,19 +36,19 @@ fn complete_loop_from_nbt(nbt: &[u8]) {
 /// resulting NBT enum is identical at each step.
 fn complete_loop_from_enum(original: &NBTFile) {
     let mut tmp = Vec::new();
-    ::string_write::write_file(&mut tmp, original).unwrap();
+    crate::string_write::write_file(&mut tmp, original).unwrap();
     let string: String = String::from_utf8(tmp).unwrap();
 
     let mut cursor = Cursor::new(string.into_bytes());
-    let nbtfile = ::string_read::read_file(&mut cursor).unwrap();
+    let nbtfile = crate::string_read::read_file(&mut cursor).unwrap();
 
     assert_eq!(original, &nbtfile);
 
     let mut tmp = Vec::new();
-    ::write::write_file(&mut tmp, &nbtfile).unwrap();
+    crate::write::write_file(&mut tmp, &nbtfile).unwrap();
 
     let mut cursor = Cursor::new(tmp);
-    let nbtfile = ::read::read_file(&mut cursor).unwrap();
+    let nbtfile = crate::read::read_file(&mut cursor).unwrap();
 
     assert_eq!(original, &nbtfile);
 }
@@ -82,7 +82,7 @@ fn bigtest_original() {
     let mut data = Vec::new();
     data.extend_from_slice(&tests_data::BIGTEST_COMPRESSED);
     let mut cursor = Cursor::new(data);
-    let nbtfile = ::read::read_file(&mut cursor).unwrap();
+    let nbtfile = crate::read::read_file(&mut cursor).unwrap();
     complete_loop_from_enum(&nbtfile);
 }
 
@@ -94,19 +94,19 @@ fn compression_read() {
     let mut data = Vec::new();
     data.extend_from_slice(&tests_data::BIGTEST_UNCOMPRESSED);
     let mut cursor = Cursor::new(data);
-    let nbt_uncompressed = ::read::read_file(&mut cursor).unwrap();
+    let nbt_uncompressed = crate::read::read_file(&mut cursor).unwrap();
 
     let mut data = Vec::new();
     data.extend_from_slice(&tests_data::BIGTEST_COMPRESSED);
     let mut cursor = Cursor::new(data);
-    let nbt_gzip = ::read::read_file(&mut cursor).unwrap();
+    let nbt_gzip = crate::read::read_file(&mut cursor).unwrap();
 
     assert_eq!(nbt_uncompressed.root, nbt_gzip.root);
 
     let mut data = Vec::new();
     data.extend_from_slice(&tests_data::BIGTEST_ZLIB);
     let mut cursor = Cursor::new(data);
-    let nbt_uncompressed = ::read::read_file(&mut cursor).unwrap();
+    let nbt_uncompressed = crate::read::read_file(&mut cursor).unwrap();
 
     assert_eq!(nbt_uncompressed.root, nbt_gzip.root);
 }
@@ -115,9 +115,9 @@ fn compression_read() {
 /// result
 fn write_read_binary(nbtfile: &NBTFile) -> NBTFile {
     let mut tmp = Vec::new();
-    ::write::write_file(&mut tmp, nbtfile).unwrap();
+    crate::write::write_file(&mut tmp, nbtfile).unwrap();
     let mut cursor = Cursor::new(tmp);
-    ::read::read_file(&mut cursor).unwrap()
+    crate::read::read_file(&mut cursor).unwrap()
 }
 
 /// Tests that files are compressed properly, by taking hello world and bigtest
@@ -128,12 +128,12 @@ fn compression_write() {
     let mut data = Vec::new();
     data.extend_from_slice(&tests_data::HELLO_WORLD);
     let mut cursor = Cursor::new(data);
-    let hello_world = ::read::read_file(&mut cursor).unwrap();
+    let hello_world = crate::read::read_file(&mut cursor).unwrap();
 
     let mut data = Vec::new();
     data.extend_from_slice(&tests_data::BIGTEST_UNCOMPRESSED);
     let mut cursor = Cursor::new(data);
-    let bigtest = ::read::read_file(&mut cursor).unwrap();
+    let bigtest = crate::read::read_file(&mut cursor).unwrap();
 
     let hello_world_gzip = NBTFile {
         root: hello_world.root.clone(),

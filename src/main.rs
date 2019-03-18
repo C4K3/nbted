@@ -6,11 +6,6 @@
         trivial_casts,
         trivial_numeric_casts,
         )]
-
-extern crate byteorder;
-extern crate flate2;
-extern crate getopts;
-extern crate tempdir;
 #[macro_use]
 extern crate error_chain;
 

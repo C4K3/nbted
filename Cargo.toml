@@ -8,6 +8,7 @@ description = "Command-line NBT editor"
 license = "CC0-1.0"
 keywords = ["nbt"]
 categories = ["command-line-utilities"]
+edition = "2018"
 
 [dependencies]
 byteorder = "1"

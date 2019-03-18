@@ -10,13 +10,13 @@ use std::io::Cursor;
 
 use error_chain::ChainedError;
 
-use data::NBTFile;
-use errors::Result;
+use crate::data::NBTFile;
+use crate::errors::Result;
 
 /// Convenience method
 fn try_parse_string(original: &str) -> Result<NBTFile> {
     let mut cursor = Cursor::new(original.as_bytes());
-    ::string_read::read_file(&mut cursor)
+    crate::string_read::read_file(&mut cursor)
 }
 
 fn try_parse_string_get_err_msg(original: &str) -> String {

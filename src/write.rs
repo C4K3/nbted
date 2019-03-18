@@ -1,5 +1,5 @@
 use crate::data::{Compression, NBT, NBTFile};
-use crate::errors::Result;
+use crate::Result;
 
 use std::io::Write;
 

@@ -1,11 +1,13 @@
 use crate::data::{Compression, NBT, NBTFile};
-use crate::errors::{Result, ResultExt};
+use crate::Result;
 
 use std::io::{self, BufRead, Read};
 
 use byteorder::{BigEndian, ReadBytesExt};
 
 use flate2::read::{GzDecoder, ZlibDecoder};
+
+use failure::ResultExt;
 
 /// Read an NBT file from the given reader
 pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
@@ -147,7 +149,7 @@ fn read_string<R: Read>(reader: &mut R) -> Result<NBT> {
     }
 
     let val = String::from_utf8(buf)
-        .chain_err(|| "Unable to read String, invalid UTF-8 encoding")?;
+        .context("Unable to read String, invalid UTF-8 encoding")?;
     Ok(NBT::String(val))
 }
 

@@ -7,7 +7,7 @@
         trivial_numeric_casts,
         )]
 #[macro_use]
-extern crate error_chain;
+extern crate failure;
 
 use std::fs::File;
 use std::io;
@@ -21,6 +21,10 @@ use getopts::Options;
 
 use tempdir::TempDir;
 
+use failure::ResultExt;
+
+type Result<T> = std::result::Result<T, failure::Error>;
+
 pub mod data;
 mod write;
 mod read;
@@ -29,30 +33,17 @@ mod string_read;
 #[cfg(test)]
 mod tests;
 
-mod errors {
-    error_chain!{
-        foreign_links {
-            Io(::std::io::Error);
-            FromUtf8String(::std::string::FromUtf8Error);
-            FromUtf8Str(::std::str::Utf8Error);
-        }
-    }
-}
-use errors::*;
-
 fn main() {
     match run_cmdline() {
         Ok(ret) => {
             exit(ret);
         },
-        Err(ref e) => {
-            if let Some(backtrace) = e.backtrace() {
-                eprintln!("{:?}", backtrace);
-            }
+        Err(e) => {
+            eprintln!("{}", e.backtrace());
 
             eprintln!("Error: {}", e);
 
-            for e in e.iter().skip(1) {
+            for e in e.iter_chain().skip(1) {
                 eprintln!("	caused by: {}", e);
             }
 
@@ -86,7 +77,7 @@ fn run_cmdline() -> Result<i32> {
     let _: &Options = opts.optflag("h", "help", "print the help menu and exit");
     let _: &Options = opts.optflag("", "version", "print program version and exit");
 
-    let matches = opts.parse(&args[1..]).chain_err(|| "error parsing options")?;
+    let matches = opts.parse(&args[1..]).context("error parsing options")?;
 
     if matches.opt_present("h") {
         let brief = "Usage: nbted [options] FILE";
@@ -196,22 +187,22 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         // let mut f = BufReader::new(io::stdin());
         let f = io::stdin();
         let mut f = f.lock();
-        read::read_file(&mut f).chain_err(|| "Unable to parse any NBT files from stdin")?
+        read::read_file(&mut f).context("Unable to parse any NBT files from stdin")?
     } else {
         let path: &Path = Path::new(input);
         let f = File::open(path)
-            .chain_err(|| format!("Unable to open file {}", input))?;
+            .context(format!("Unable to open file {}", input))?;
         let mut f = BufReader::new(f);
 
-        read::read_file(&mut f).chain_err(
-            || format!("Unable to parse {}, are you sure it's an NBT file?",
-                       input))?
+        read::read_file(&mut f).context(
+            format_err!("Unable to parse {}, are you sure it's an NBT file?",
+                        input))?
     };
 
     /* Then we create a temporary file and write the NBT data in text format
      * to the temporary file */
     let tmpdir = TempDir::new("nbted")
-        .chain_err(|| "Unable to create temporary directory")?;
+        .context("Unable to create temporary directory")?;
 
     let tmp = match Path::new(input).file_name() {
         Some(x) => {
@@ -225,12 +216,12 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 
     {
         let mut f = File::create(&tmp_path)
-            .chain_err(|| "Unable to create temporary file")?;
+            .context("Unable to create temporary file")?;
 
         string_write::write_file(&mut f, &nbt)
-            .chain_err(|| "Unable to write temporary file")?;
+            .context("Unable to write temporary file")?;
 
-        f.sync_all().chain_err(|| "Unable to synchronize file")?;
+        f.sync_all().context("Unable to synchronize file")?;
     }
 
     let new_nbt = {
@@ -238,14 +229,14 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 
         while let Err(e) = new_nbt {
             eprintln!("Unable to parse edited file");
-            for e in e.iter().collect::<Vec<&dyn std::error::Error>>().iter().rev() {
+            for e in e.iter_chain() {
                 eprintln!("	caused by: {}", e);
             }
             eprintln!("Do you want to open the file for editing again? (y/N)");
 
             let mut line = String::new();
             let _: usize = io::stdin().read_line(&mut line)
-                .chain_err(|| "Error reading from stdin. Nothing was changed")?;
+                .context("Error reading from stdin. Nothing was changed")?;
 
             if line.trim() == "y" {
                 new_nbt = open_editor(&tmp_path);
@@ -277,13 +268,13 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).chain_err(
-            || format!("Unable to write to output NBT file {}. Nothing was changed",
-                       output))?;
+        let f = File::create(&path).context(
+            format_err!("Unable to write to output NBT file {}. Nothing was changed",
+                        output))?;
         let mut f = BufWriter::new(f);
 
-        write::write_file(&mut f, &new_nbt).chain_err(
-            || format!("Error writing NBT file {}. State of NBT file is unknown, consider restoring it from a backup.",
+        write::write_file(&mut f, &new_nbt).context(
+            format_err!("Error writing NBT file {}. State of NBT file is unknown, consider restoring it from a backup.",
                        output))?;
     }
 
@@ -307,19 +298,16 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
 
     let mut cmd = Command::new(editor);
     let _: &mut Command = cmd.arg(&tmp_path.as_os_str());
-    let mut cmd = cmd.spawn().chain_err(|| "Error opening editor")?;
+    let mut cmd = cmd.spawn().context("Error opening editor")?;
 
-    match cmd.wait() {
-        Ok(x) if x.success() => (),
-        Ok(_) => bail!("Editor did not exit correctly"),
-        Err(e) => {
-            return Err(Error::with_chain(e, "Error executing editor"));
-        },
+    match cmd.wait().context("error executing editor")? {
+        x if x.success() => (),
+        _ => bail!("Editor did not exit correctly"),
     }
 
     /* Then we parse the text format in the temporary file into NBT */
-    let mut f = File::open(&tmp_path).chain_err(
-        || "Unable to read temporary file. Nothing was changed.")?;
+    let mut f = File::open(&tmp_path).context(
+        format_err!("Unable to read temporary file. Nothing was changed."))?;
 
     string_read::read_file(&mut f).map_err(|e| e.into())
 }
@@ -330,17 +318,17 @@ fn print(input: &str, output: &str) -> Result<i32> {
     let nbt = if input == "-" {
         let f = io::stdin();
         let mut f = f.lock();
-        read::read_file(&mut f).chain_err(
-            || format!("Unable to parse {}, are you sure it's an NBT file?",
+        read::read_file(&mut f).context(
+            format_err!("Unable to parse {}, are you sure it's an NBT file?",
                        input))?
     } else {
         let path: &Path = Path::new(input);
-        let f = File::open(path).chain_err(
-            || format!("Unable to open file {}", input))?;
+        let f = File::open(path).context(
+            format_err!("Unable to open file {}", input))?;
         let mut f = BufReader::new(f);
 
-        read::read_file(&mut f).chain_err(
-            || format!("Unable to parse {}, are you sure it's an NBT file?",
+        read::read_file(&mut f).context(
+            format_err!("Unable to parse {}, are you sure it's an NBT file?",
                        input))?
     };
 
@@ -358,13 +346,13 @@ fn print(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).chain_err(
-            || format!("Unable to write to output NBT file {}. Nothing was changed.",
+        let f = File::create(&path).context(
+            format_err!("Unable to write to output NBT file {}. Nothing was changed.",
                        output))?;
         let mut f = BufWriter::new(f);
 
-        string_write::write_file(&mut f, &nbt).chain_err(
-            || format!("Error writing NBT file {}. State of NBT file is unknown, consider restoring it from a backup.",
+        string_write::write_file(&mut f, &nbt).context(
+            format_err!("Error writing NBT file {}. State of NBT file is unknown, consider restoring it from a backup.",
                        output))?;
     }
 
@@ -377,12 +365,12 @@ fn print(input: &str, output: &str) -> Result<i32> {
 fn reverse(input: &str, output: &str) -> Result<i32> {
     /* First we read the input file in the text format */
     let path: &Path = Path::new(input);
-    let mut f = File::open(&path).chain_err(
-        || format!("Unable to read text file {}",
+    let mut f = File::open(&path).context(
+        format_err!("Unable to read text file {}",
                    input))?;
 
-    let nbt = string_read::read_file(&mut f).chain_err(
-        || format!("Unable to parse text file {}",
+    let nbt = string_read::read_file(&mut f).context(
+        format_err!("Unable to parse text file {}",
         input))?;
 
     /* Then we write the parsed NBT to the output file in NBT format */
@@ -399,13 +387,13 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).chain_err(
-            || format!("Unable to write to output NBT file {}. Nothing was changed",
+        let f = File::create(&path).context(
+            format_err!("Unable to write to output NBT file {}. Nothing was changed",
                        output))?;
         let mut f = BufWriter::new(f);
 
-        write::write_file(&mut f, &nbt).chain_err(
-            || format!("error writing to NBT FILE {}, state of NBT file is unknown, consider restoring it from a backup.",
+        write::write_file(&mut f, &nbt).context(
+            format_err!("error writing to NBT FILE {}, state of NBT file is unknown, consider restoring it from a backup.",
                        output))?;
     }
 

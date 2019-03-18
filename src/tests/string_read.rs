@@ -8,10 +8,8 @@
 
 use std::io::Cursor;
 
-use error_chain::ChainedError;
-
 use crate::data::NBTFile;
-use crate::errors::Result;
+use crate::Result;
 
 /// Convenience method
 fn try_parse_string(original: &str) -> Result<NBTFile> {
@@ -24,7 +22,7 @@ fn try_parse_string_get_err_msg(original: &str) -> String {
         Ok(_) => panic!("try_parse_string_get_err_msg test expected the file to be Err but it was Ok"),
         Err(e) => e,
     };
-    format!("{}", err.display_chain())
+    format!("{:?}", err)
 }
 
 #[test]

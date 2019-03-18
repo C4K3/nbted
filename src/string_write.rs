@@ -1,5 +1,5 @@
 use crate::data::{NBT, NBTFile};
-use crate::errors::Result;
+use crate::Result;
 
 use byteorder::WriteBytesExt;
 

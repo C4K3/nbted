@@ -1,9 +1,11 @@
 use crate::data::{Compression, NBT, NBTFile};
-use crate::errors::{Result, ResultExt};
+use crate::Result;
 
 use std::io::Read;
 use std::str;
 use std::borrow::Cow;
+
+use failure::ResultExt;
 
 /// A struct for iterating over the tokens in a given file
 ///
@@ -65,7 +67,7 @@ impl<'a> Iterator for Tokens<'a> {
                     },
                     x if escape => {
                         return Some(Err(
-                                format!(r#"Invalid string, tried to escape the character {} which cannot be escaped (to enter a literal \, write \\)"#, x).into()))
+                            format_err!(r#"Invalid string, tried to escape the character {} which cannot be escaped (to enter a literal \, write \\)"#, x)))
                     },
                     x => ret.push(*x),
                 }
@@ -170,7 +172,7 @@ fn read_byte(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a byte"),
     };
-    let val = val.parse::<i8>().chain_err(|| format!("Invalid Byte {}", val))?;
+    let val = val.parse::<i8>().context(format!("Invalid Byte {}", val))?;
     Ok(NBT::Byte(val))
 }
 
@@ -179,7 +181,7 @@ fn read_short(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a short"),
     };
-    let val = val.parse::<i16>().chain_err(|| format!("Invalid Short {}", val))?;
+    let val = val.parse::<i16>().context(format!("Invalid Short {}", val))?;
     Ok(NBT::Short(val))
 }
 
@@ -188,7 +190,7 @@ fn read_int(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read an int"),
     };
-    let val = val.parse::<i32>().chain_err(|| format!("Invalid Int {}", val))?;
+    let val = val.parse::<i32>().context(format!("Invalid Int {}", val))?;
     Ok(NBT::Int(val))
 }
 
@@ -197,7 +199,7 @@ fn read_long(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a long"),
     };
-    let val = val.parse::<i64>().chain_err(|| format!("Invalid Long {}", val))?;
+    let val = val.parse::<i64>().context(format!("Invalid Long {}", val))?;
     Ok(NBT::Long(val))
 }
 
@@ -206,7 +208,7 @@ fn read_float(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a float"),
     };
-    let val = val.parse::<f32>().chain_err(|| format!("Invalid Float {}", val))?;
+    let val = val.parse::<f32>().context(format!("Invalid Float {}", val))?;
     Ok(NBT::Float(val))
 }
 
@@ -215,7 +217,7 @@ fn read_double(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a double"),
     };
-    let val = val.parse::<f64>().chain_err(|| format!("Invalid Double {}", val))?;
+    let val = val.parse::<f64>().context(format!("Invalid Double {}", val))?;
     Ok(NBT::Double(val))
 }
 

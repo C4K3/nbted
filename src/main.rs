@@ -26,6 +26,7 @@ use failure::ResultExt;
 type Result<T> = std::result::Result<T, failure::Error>;
 
 pub mod data;
+pub mod iter_replacer;
 mod write;
 mod read;
 mod string_write;

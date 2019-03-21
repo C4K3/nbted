@@ -9,9 +9,9 @@ pub enum NBT {
     Float(f32),
     Double(f64),
     ByteArray(Vec<i8>),
-    String(String),
+    String(Vec<u8>),
     List(Vec<NBT>),
-    Compound(Vec<(String, NBT)>),
+    Compound(Vec<(Vec<u8>, NBT)>),
     IntArray(Vec<i32>),
 }
 impl NBT {

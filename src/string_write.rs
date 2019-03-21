@@ -1,5 +1,6 @@
 use crate::data::{NBT, NBTFile};
 use crate::Result;
+use crate::iter_replacer::ReplacerExt;
 
 use byteorder::WriteBytesExt;
 
@@ -68,10 +69,14 @@ fn write_tag<W: Write>(w: &mut W,
             if compound {
                 write!(w, " ")?;
             }
-            writeln!(w,
-                     r#""{}""#,
-                     /* Order is important here */
-                     x.replace(r"\", r"\\").replace(r#"""#, r#"\""#))?
+            write!(w, r#"""#)?;
+            /* Order is important here */
+            for b in x.iter()
+                .replacer(br"\", br"\\")
+                .replacer(br#"""#, br#"\""#) {
+                    w.write_all(&[b])?;
+            }
+            writeln!(w, r#"""#)?;
         },
         &NBT::List(ref x) => {
             /* If the list has length 0, then it just defaults to type "End". */
@@ -96,10 +101,13 @@ fn write_tag<W: Write>(w: &mut W,
             for &(ref key, ref val) in x {
                 write_indent(w, indent)?;
                 w.write_all(val.type_string().as_bytes())?;
-                write!(w,
-                       r#" "{}""#,
-                       /* Order is important here */
-                       key.replace(r"\", r"\\").replace(r#"""#, r#"\""#))?;
+                write!(w, r#" ""#)?;
+                for x in key.iter()
+                    .replacer(br"\", br"\\")
+                    .replacer(br#"""#, br#"\""#) {
+                        w.write_all(&[x])?;
+                    }
+                write!(w, r#"""#)?;
                 write_tag(w, val, indent + 1, true)?;
             }
 

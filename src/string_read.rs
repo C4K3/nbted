@@ -241,7 +241,7 @@ fn read_string(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a string"),
     };
-    Ok(NBT::String(val.into_owned()))
+    Ok(NBT::String(val.into_owned().into_bytes()))
 }
 
 fn read_list(tokens: &mut Tokens) -> Result<NBT> {
@@ -281,7 +281,7 @@ fn read_compound(tokens: &mut Tokens) -> Result<NBT> {
         };
         let nbt = read_tag(tokens, &tag_type)?;
 
-        map.push((name.into_owned(), nbt));
+        map.push((name.into_owned().into_bytes(), nbt));
     }
 
     Ok(NBT::Compound(map))

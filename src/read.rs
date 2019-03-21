@@ -7,8 +7,6 @@ use byteorder::{BigEndian, ReadBytesExt};
 
 use flate2::read::{GzDecoder, ZlibDecoder};
 
-use failure::ResultExt;
-
 /// Read an NBT file from the given reader
 pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
     /* Peek into the first byte of the reader, which is used to determine the
@@ -148,9 +146,7 @@ fn read_string<R: Read>(reader: &mut R) -> Result<NBT> {
         bail!("Error reading string length");
     }
 
-    let val = String::from_utf8(buf)
-        .context("Unable to read String, invalid UTF-8 encoding")?;
-    Ok(NBT::String(val))
+    Ok(NBT::String(buf))
 }
 
 fn read_list<R: Read>(reader: &mut R) -> Result<NBT> {

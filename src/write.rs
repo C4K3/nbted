@@ -87,8 +87,8 @@ fn write_byte_array<W: Write>(w: &mut W, val: &Vec<i8>) -> Result<()> {
     Ok(())
 }
 
-fn write_string<W: Write>(w: &mut W, val: &String) -> Result<()> {
-    let bytes = val.as_bytes();
+fn write_string<W: Write>(w: &mut W, val: &Vec<u8>) -> Result<()> {
+    let bytes = &val;
     w.write_u16::<BigEndian>(bytes.len() as u16)?;
     w.write_all(bytes).map_err(|e| e.into())
 }
@@ -111,7 +111,7 @@ fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> Result<()> {
 }
 
 fn write_compound<W: Write>(w: &mut W,
-                            map: &Vec<(String, NBT)>,
+                            map: &Vec<(Vec<u8>, NBT)>,
                             end: bool)
                             -> Result<()> {
     for &(ref key, ref tag) in map {

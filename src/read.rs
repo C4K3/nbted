@@ -1,4 +1,4 @@
-use crate::data::{Compression, NBT, NBTFile};
+use crate::data::{Compression, NBTFile, NBT};
 use crate::Result;
 
 use std::io::{self, BufRead, Read};
@@ -13,17 +13,12 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
      * compression */
     let peek = match reader.fill_buf()? {
         x if x.len() >= 1 => x[0],
-        _ => {
-            bail!("Error peaking first byte in read::read_file, file was EOF")
-        },
+        _ => bail!("Error peaking first byte in read::read_file, file was EOF"),
     };
 
     let compression = match Compression::from_first_byte(peek) {
         Some(x) => x,
-        None => {
-            bail!("Unknown compression format where first byte is {}",
-                             peek)
-        },
+        None => bail!("Unknown compression format where first byte is {}", peek),
     };
 
     let root = match compression {
@@ -33,9 +28,9 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
     };
 
     Ok(NBTFile {
-           root: root,
-           compression: compression,
-       })
+        root: root,
+        compression: compression,
+    })
 }
 
 /// Reads an NBT compound. I.e. assumes that the first byte from the Reader is
@@ -54,10 +49,10 @@ fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
             Ok(()) => (),
             Err(ref e) if e.kind() == io::ErrorKind::UnexpectedEof => {
                 break;
-            },
+            }
             Err(e) => {
                 return Err(e.into());
-            },
+            }
         }
 
         /* If we've got a TAG_end now, then the compound list is done */
@@ -84,9 +79,9 @@ fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
                 0x0b => read_int_array(reader)?,
                 x => {
                     bail!("Got unknown type id {:x} trying to read NBT compound", x);
-                },
-            }
-            ));
+                }
+            },
+        ));
     }
 
     Ok(NBT::Compound(map))
@@ -126,11 +121,10 @@ fn read_byte_array<R: Read>(reader: &mut R) -> Result<NBT> {
 
     for _ in 0..length {
         ret.push(match read_byte(reader)? {
-                     NBT::Byte(val) => val,
-                     _ => unreachable!(),
-                 });
+            NBT::Byte(val) => val,
+            _ => unreachable!(),
+        });
     }
-
 
     Ok(NBT::ByteArray(ret))
 }
@@ -190,9 +184,9 @@ fn read_int_array<R: Read>(reader: &mut R) -> Result<NBT> {
 
     for _ in 0..length {
         ret.push(match read_int(reader)? {
-                     NBT::Int(val) => val,
-                     _ => unreachable!(),
-                 });
+            NBT::Int(val) => val,
+            _ => unreachable!(),
+        });
     }
 
     Ok(NBT::IntArray(ret))

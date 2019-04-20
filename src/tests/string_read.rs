@@ -5,7 +5,6 @@
 ///
 /// Testing of valid and regularly formatted files are conducted in the main
 /// file with its "loops".
-
 use std::io::Cursor;
 
 use crate::data::NBTFile;
@@ -19,7 +18,9 @@ fn try_parse_string(original: &str) -> Result<NBTFile> {
 
 fn try_parse_string_get_err_msg(original: &str) -> String {
     let err = match try_parse_string(original) {
-        Ok(_) => panic!("try_parse_string_get_err_msg test expected the file to be Err but it was Ok"),
+        Ok(_) => {
+            panic!("try_parse_string_get_err_msg test expected the file to be Err but it was Ok")
+        }
         Err(e) => e,
     };
     format!("{:?}", err)
@@ -64,7 +65,8 @@ fn invalid_int() {
 
 #[test]
 fn invalid_tag_type() {
-    let err_msg = try_parse_string_get_err_msg(r#"Gzip Compound "" List "" NotATagType 1 9 End End"#);
+    let err_msg =
+        try_parse_string_get_err_msg(r#"Gzip Compound "" List "" NotATagType 1 9 End End"#);
     assert!(err_msg.contains("Unknown tag type NotATagType"));
 }
 
@@ -74,5 +76,6 @@ fn unquoted_string() {
      * become valid syntax. I'm not sure if I want to keep this valid or not,
      * so I'll leave it undocumented except for this test testing that they are
      * parsed */
-    let _: NBTFile = try_parse_string(r#"None Compound ForgotQuotationMarksAroundThisString End End"#).unwrap();
+    let _: NBTFile =
+        try_parse_string(r#"None Compound ForgotQuotationMarksAroundThisString End End"#).unwrap();
 }

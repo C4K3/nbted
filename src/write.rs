@@ -1,4 +1,4 @@
-use crate::data::{Compression, NBT, NBTFile};
+use crate::data::{Compression, NBTFile, NBT};
 use crate::Result;
 
 use std::io::Write;
@@ -9,7 +9,9 @@ use flate2;
 use flate2::write::{GzEncoder, ZlibEncoder};
 
 macro_rules! compression_level {
-    () => { flate2::Compression::default() };
+    () => {
+        flate2::Compression::default()
+    };
 }
 
 /// Given an NBT file, write it as a binary NBT file to the writer
@@ -25,12 +27,12 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
             let mut w = GzEncoder::new(w, compression_level!());
             write_compound(&mut w, map, false)?;
             let _: &mut W = w.finish()?;
-        },
+        }
         Compression::Zlib => {
             let mut w = ZlibEncoder::new(w, compression_level!());
             write_compound(&mut w, map, false)?;
             let _: &mut W = w.finish()?;
-        },
+        }
     }
 
     Ok(())
@@ -95,11 +97,7 @@ fn write_string<W: Write>(w: &mut W, val: &Vec<u8>) -> Result<()> {
 
 fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> Result<()> {
     /* If the list has length 0, then it just defaults to type "End". */
-    let tag_type = if val.len() > 0 {
-        val[0].type_byte()
-    } else {
-        0
-    };
+    let tag_type = if val.len() > 0 { val[0].type_byte() } else { 0 };
     w.write_all(&[tag_type])?;
     write_int(w, val.len() as i32)?;
 
@@ -110,10 +108,7 @@ fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> Result<()> {
     Ok(())
 }
 
-fn write_compound<W: Write>(w: &mut W,
-                            map: &Vec<(Vec<u8>, NBT)>,
-                            end: bool)
-                            -> Result<()> {
+fn write_compound<W: Write>(w: &mut W, map: &Vec<(Vec<u8>, NBT)>, end: bool) -> Result<()> {
     for &(ref key, ref tag) in map {
         w.write_all(&[tag.type_byte()])?;
         write_string(w, key)?;

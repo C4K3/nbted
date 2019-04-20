@@ -2,9 +2,9 @@ use std::io::Cursor;
 
 use crate::data::{Compression, NBTFile};
 
-mod tests_data;
-mod string_read;
 mod iter_replacer;
+mod string_read;
+mod tests_data;
 
 /// Given some NBT data in original format, loops it around by converting it
 /// in the following way: Read NBT -> Write String -> Read String -> Write NBT
@@ -14,8 +14,7 @@ mod iter_replacer;
 fn complete_loop_from_nbt(nbt: &[u8]) {
     let mut original = Vec::new();
     original.extend_from_slice(nbt);
-    let nbtfile1 = crate::read::read_file(&mut Cursor::new(original.clone()))
-        .unwrap();
+    let nbtfile1 = crate::read::read_file(&mut Cursor::new(original.clone())).unwrap();
 
     let mut tmp = Vec::new();
     crate::string_write::write_file(&mut tmp, &nbtfile1).unwrap();
@@ -146,10 +145,14 @@ fn compression_write() {
         compression: Compression::Zlib,
     };
 
-    assert_eq!(&hello_world.root,
-               &write_read_binary(&hello_world_gzip).root);
-    assert_eq!(&hello_world.root,
-               &write_read_binary(&hello_world_zlib).root);
+    assert_eq!(
+        &hello_world.root,
+        &write_read_binary(&hello_world_gzip).root
+    );
+    assert_eq!(
+        &hello_world.root,
+        &write_read_binary(&hello_world_zlib).root
+    );
 
     let bigtest_gzip = NBTFile {
         root: bigtest.root.clone(),

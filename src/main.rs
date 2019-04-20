@@ -1,19 +1,20 @@
-#![warn(unused_results,
-        unused_extern_crates,
-        unused_import_braces,
-        unused_qualifications,
-        variant_size_differences,
-        trivial_casts,
-        trivial_numeric_casts,
-        )]
+#![warn(
+    unused_results,
+    unused_extern_crates,
+    unused_import_braces,
+    unused_qualifications,
+    variant_size_differences,
+    trivial_casts,
+    trivial_numeric_casts
+)]
 #[macro_use]
 extern crate failure;
 
+use std::env;
 use std::fs::File;
 use std::io;
 use std::io::{BufReader, BufWriter};
 use std::path::Path;
-use std::env;
 use std::process::exit;
 use std::process::Command;
 
@@ -27,18 +28,18 @@ type Result<T> = std::result::Result<T, failure::Error>;
 
 pub mod data;
 pub mod iter_replacer;
-mod write;
 mod read;
-mod string_write;
 mod string_read;
+mod string_write;
 #[cfg(test)]
 mod tests;
+mod write;
 
 fn main() {
     match run_cmdline() {
         Ok(ret) => {
             exit(ret);
-        },
+        }
         Err(e) => {
             eprintln!("{}", e.backtrace());
 
@@ -50,7 +51,7 @@ fn main() {
 
             eprintln!("For help, run with --help or read the manpage.");
             exit(1);
-        },
+        }
     }
 }
 
@@ -66,14 +67,18 @@ fn run_cmdline() -> Result<i32> {
     If no file is specified, default to read from --input and writing to --output.", "FILE");
     let _: &Options = opts.optflagopt("p", "print", "print NBT file to text format. Adding an argument to this is the same as specifying --input", "FILE");
     let _: &Options = opts.optflagopt("r", "reverse", "reverse a file in text format to NBT format. Adding an argument to this is the same as specifying --input", "FILE");
-    let _: &Options = opts.optopt("i",
-                "input",
-                "specify the input file, defaults to stdin",
-                "FILE");
-    let _: &Options = opts.optopt("o",
-                "output",
-                "specify the output file, defaults to stdout",
-                "FILE");
+    let _: &Options = opts.optopt(
+        "i",
+        "input",
+        "specify the input file, defaults to stdin",
+        "FILE",
+    );
+    let _: &Options = opts.optopt(
+        "o",
+        "output",
+        "specify the output file, defaults to stdout",
+        "FILE",
+    );
     let _: &Options = opts.optflag("", "man", "print the nbted man page source and exit");
     let _: &Options = opts.optflag("h", "help", "print the help menu and exit");
     let _: &Options = opts.optflag("", "version", "print program version and exit");
@@ -84,18 +89,22 @@ fn run_cmdline() -> Result<i32> {
         let brief = "Usage: nbted [options] FILE";
         print!("{}", opts.usage(&brief));
         println!("\nThe default action, taken if no action is explicitly selected, is to --edit.");
-        println!("\nFor detailed usage information, read the nbted man page. If the nbted man page\
-        \nwas not installed on your system, such as if you installed using `cargo install`,\
-        \nthen you can use `nbted --man | nroff -man | less` to read the nbted man page.");
+        println!(
+            "\nFor detailed usage information, read the nbted man page. If the nbted man page\
+             \nwas not installed on your system, such as if you installed using `cargo install`,\
+             \nthen you can use `nbted --man | nroff -man | less` to read the nbted man page."
+        );
         return Ok(0);
     }
 
     if matches.opt_present("version") {
-        println!("{} {} {}",
-                 env!("CARGO_PKG_NAME"),
-                 env!("CARGO_PKG_VERSION"),
-                 /* See build.rs for the git-revision.txt file */
-                 include!(concat!(env!("OUT_DIR"), "/git-revision.txt")));
+        println!(
+            "{} {} {}",
+            env!("CARGO_PKG_NAME"),
+            env!("CARGO_PKG_VERSION"),
+            /* See build.rs for the git-revision.txt file */
+            include!(concat!(env!("OUT_DIR"), "/git-revision.txt"))
+        );
         println!("https://github.com/C4K3/nbted");
         return Ok(0);
     }
@@ -182,7 +191,6 @@ fn run_cmdline() -> Result<i32> {
 ///
 /// Returns an integer representing the program's exit status.
 fn edit(input: &str, output: &str) -> Result<i32> {
-
     /* First we read the NBT data from the input */
     let nbt = if input == "-" {
         // let mut f = BufReader::new(io::stdin());
@@ -191,36 +199,33 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         read::read_file(&mut f).context("Unable to parse any NBT files from stdin")?
     } else {
         let path: &Path = Path::new(input);
-        let f = File::open(path)
-            .context(format!("Unable to open file {}", input))?;
+        let f = File::open(path).context(format!("Unable to open file {}", input))?;
         let mut f = BufReader::new(f);
 
-        read::read_file(&mut f).context(
-            format_err!("Unable to parse {}, are you sure it's an NBT file?",
-                        input))?
+        read::read_file(&mut f).context(format_err!(
+            "Unable to parse {}, are you sure it's an NBT file?",
+            input
+        ))?
     };
 
     /* Then we create a temporary file and write the NBT data in text format
      * to the temporary file */
-    let tmpdir = TempDir::new("nbted")
-        .context("Unable to create temporary directory")?;
+    let tmpdir = TempDir::new("nbted").context("Unable to create temporary directory")?;
 
     let tmp = match Path::new(input).file_name() {
         Some(x) => {
             let mut x = x.to_os_string();
             x.push(".txt");
             x
-        },
+        }
         None => bail!("Error reading file name"),
     };
     let tmp_path = tmpdir.path().join(tmp);
 
     {
-        let mut f = File::create(&tmp_path)
-            .context("Unable to create temporary file")?;
+        let mut f = File::create(&tmp_path).context("Unable to create temporary file")?;
 
-        string_write::write_file(&mut f, &nbt)
-            .context("Unable to write temporary file")?;
+        string_write::write_file(&mut f, &nbt).context("Unable to write temporary file")?;
 
         f.sync_all().context("Unable to synchronize file")?;
     }
@@ -236,7 +241,8 @@ fn edit(input: &str, output: &str) -> Result<i32> {
             eprintln!("Do you want to open the file for editing again? (y/N)");
 
             let mut line = String::new();
-            let _: usize = io::stdin().read_line(&mut line)
+            let _: usize = io::stdin()
+                .read_line(&mut line)
                 .context("Error reading from stdin. Nothing was changed")?;
 
             if line.trim() == "y" {
@@ -269,9 +275,10 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).context(
-            format_err!("Unable to write to output NBT file {}. Nothing was changed",
-                        output))?;
+        let f = File::create(&path).context(format_err!(
+            "Unable to write to output NBT file {}. Nothing was changed",
+            output
+        ))?;
         let mut f = BufWriter::new(f);
 
         write::write_file(&mut f, &new_nbt).context(
@@ -289,11 +296,9 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
     let editor = match env::var("EDITOR") {
         Ok(x) => x,
-        Err(_) => {
-            match env::var("VISUAL") {
-                Ok(x) => x,
-                Err(_) => bail!("Unable to find $EDITOR"),
-            }
+        Err(_) => match env::var("VISUAL") {
+            Ok(x) => x,
+            Err(_) => bail!("Unable to find $EDITOR"),
         },
     };
 
@@ -307,8 +312,9 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
     }
 
     /* Then we parse the text format in the temporary file into NBT */
-    let mut f = File::open(&tmp_path).context(
-        format_err!("Unable to read temporary file. Nothing was changed."))?;
+    let mut f = File::open(&tmp_path).context(format_err!(
+        "Unable to read temporary file. Nothing was changed."
+    ))?;
 
     string_read::read_file(&mut f).map_err(|e| e.into())
 }
@@ -319,18 +325,19 @@ fn print(input: &str, output: &str) -> Result<i32> {
     let nbt = if input == "-" {
         let f = io::stdin();
         let mut f = f.lock();
-        read::read_file(&mut f).context(
-            format_err!("Unable to parse {}, are you sure it's an NBT file?",
-                       input))?
+        read::read_file(&mut f).context(format_err!(
+            "Unable to parse {}, are you sure it's an NBT file?",
+            input
+        ))?
     } else {
         let path: &Path = Path::new(input);
-        let f = File::open(path).context(
-            format_err!("Unable to open file {}", input))?;
+        let f = File::open(path).context(format_err!("Unable to open file {}", input))?;
         let mut f = BufReader::new(f);
 
-        read::read_file(&mut f).context(
-            format_err!("Unable to parse {}, are you sure it's an NBT file?",
-                       input))?
+        read::read_file(&mut f).context(format_err!(
+            "Unable to parse {}, are you sure it's an NBT file?",
+            input
+        ))?
     };
 
     /* Then we write the NBTFile to the output in text format */
@@ -347,9 +354,10 @@ fn print(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).context(
-            format_err!("Unable to write to output NBT file {}. Nothing was changed.",
-                       output))?;
+        let f = File::create(&path).context(format_err!(
+            "Unable to write to output NBT file {}. Nothing was changed.",
+            output
+        ))?;
         let mut f = BufWriter::new(f);
 
         string_write::write_file(&mut f, &nbt).context(
@@ -366,13 +374,10 @@ fn print(input: &str, output: &str) -> Result<i32> {
 fn reverse(input: &str, output: &str) -> Result<i32> {
     /* First we read the input file in the text format */
     let path: &Path = Path::new(input);
-    let mut f = File::open(&path).context(
-        format_err!("Unable to read text file {}",
-                   input))?;
+    let mut f = File::open(&path).context(format_err!("Unable to read text file {}", input))?;
 
-    let nbt = string_read::read_file(&mut f).context(
-        format_err!("Unable to parse text file {}",
-        input))?;
+    let nbt = string_read::read_file(&mut f)
+        .context(format_err!("Unable to parse text file {}", input))?;
 
     /* Then we write the parsed NBT to the output file in NBT format */
     if output == "-" {
@@ -388,9 +393,10 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).context(
-            format_err!("Unable to write to output NBT file {}. Nothing was changed",
-                       output))?;
+        let f = File::create(&path).context(format_err!(
+            "Unable to write to output NBT file {}. Nothing was changed",
+            output
+        ))?;
         let mut f = BufWriter::new(f);
 
         write::write_file(&mut f, &nbt).context(

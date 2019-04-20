@@ -1,5 +1,5 @@
-use std::collections::VecDeque;
 use std::borrow::Borrow;
+use std::collections::VecDeque;
 
 /// An iterator that consumes another iterator and replaces every matching
 /// sequence with a different sequence.
@@ -16,7 +16,8 @@ use std::borrow::Borrow;
 /// NOT an incomplete [1, 2, 3] pattern and it will be able to return
 /// the [1, 2] immediately (maybe this behavior should be made configurable?)
 pub struct Replacer<'a, I, A, B>
-where I: Iterator,
+where
+    I: Iterator,
 {
     iter: Option<I>,
     q: VecDeque<B>,
@@ -25,9 +26,10 @@ where I: Iterator,
     replacing: Option<usize>,
 }
 impl<'a, I, A, B> Replacer<'a, I, A, B>
-where I: Iterator,
-      I::Item: Borrow<B>,
-      B: Clone + PartialEq<A>,
+where
+    I: Iterator,
+    I::Item: Borrow<B>,
+    B: Clone + PartialEq<A>,
 {
     /// Creates a new replacer
     ///
@@ -70,11 +72,11 @@ where I: Iterator,
     }
 }
 impl<'a, I, A, B> Iterator for Replacer<'a, I, A, B>
-where I: Iterator,
-      I::Item: Borrow<B>,
-      B: Clone + PartialEq<A>,
+where
+    I: Iterator,
+    I::Item: Borrow<B>,
+    B: Clone + PartialEq<A>,
 {
-
     type Item = B;
 
     fn next(&mut self) -> Option<B> {
@@ -100,19 +102,20 @@ where I: Iterator,
 }
 
 pub trait ReplacerExt<'a, I, A, B>
-where I: Iterator,
-      I::Item: Borrow<B>,
-      B: Clone + PartialEq<A>,
+where
+    I: Iterator,
+    I::Item: Borrow<B>,
+    B: Clone + PartialEq<A>,
 {
     fn replacer(self, a: &'a [A], b: &'a [B]) -> Replacer<'a, I, A, B>;
 }
 impl<'a, I, A, B> ReplacerExt<'a, I, A, B> for I
-where I: Iterator,
-      I::Item: Borrow<B>,
-      B: Clone + PartialEq<A>,
+where
+    I: Iterator,
+    I::Item: Borrow<B>,
+    B: Clone + PartialEq<A>,
 {
     fn replacer(self, a: &'a [A], b: &'a [B]) -> Replacer<'a, I, A, B> {
         Replacer::new(self, a, b)
     }
 }
-

@@ -1,9 +1,9 @@
-use crate::data::{Compression, NBT, NBTFile};
+use crate::data::{Compression, NBTFile, NBT};
 use crate::Result;
 
+use std::borrow::Cow;
 use std::io::Read;
 use std::str;
-use std::borrow::Cow;
 
 use failure::ResultExt;
 
@@ -102,7 +102,6 @@ impl<'a> Iterator for Tokens<'a> {
             self.a = self.b;
             return Some(Ok(Cow::Borrowed(ret)));
         }
-
     }
 }
 
@@ -181,7 +180,9 @@ fn read_short(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a short"),
     };
-    let val = val.parse::<i16>().context(format!("Invalid Short {}", val))?;
+    let val = val
+        .parse::<i16>()
+        .context(format!("Invalid Short {}", val))?;
     Ok(NBT::Short(val))
 }
 
@@ -199,7 +200,9 @@ fn read_long(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a long"),
     };
-    let val = val.parse::<i64>().context(format!("Invalid Long {}", val))?;
+    let val = val
+        .parse::<i64>()
+        .context(format!("Invalid Long {}", val))?;
     Ok(NBT::Long(val))
 }
 
@@ -208,7 +211,9 @@ fn read_float(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a float"),
     };
-    let val = val.parse::<f32>().context(format!("Invalid Float {}", val))?;
+    let val = val
+        .parse::<f32>()
+        .context(format!("Invalid Float {}", val))?;
     Ok(NBT::Float(val))
 }
 
@@ -217,7 +222,9 @@ fn read_double(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a double"),
     };
-    let val = val.parse::<f64>().context(format!("Invalid Double {}", val))?;
+    let val = val
+        .parse::<f64>()
+        .context(format!("Invalid Double {}", val))?;
     Ok(NBT::Double(val))
 }
 
@@ -229,9 +236,9 @@ fn read_byte_array(tokens: &mut Tokens) -> Result<NBT> {
     let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(match read_byte(tokens)? {
-                     NBT::Byte(x) => x,
-                     _ => unreachable!(),
-                 });
+            NBT::Byte(x) => x,
+            _ => unreachable!(),
+        });
     }
     Ok(NBT::ByteArray(tmp))
 }
@@ -277,7 +284,10 @@ fn read_compound(tokens: &mut Tokens) -> Result<NBT> {
 
         let name = match tokens.next() {
             Some(x) => x?,
-            None => bail!("EOF when trying to read the name of a {} tag in a compound", tag_type),
+            None => bail!(
+                "EOF when trying to read the name of a {} tag in a compound",
+                tag_type
+            ),
         };
         let nbt = read_tag(tokens, &tag_type)?;
 
@@ -295,9 +305,9 @@ fn read_int_array(tokens: &mut Tokens) -> Result<NBT> {
     let mut tmp = Vec::with_capacity(len as usize);
     for _ in 0..len {
         tmp.push(match read_int(tokens)? {
-                     NBT::Int(x) => x,
-                     _ => unreachable!(),
-                 });
+            NBT::Int(x) => x,
+            _ => unreachable!(),
+        });
     }
     Ok(NBT::IntArray(tmp))
 }

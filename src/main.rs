@@ -1,14 +1,7 @@
-#![warn(
-    unused_results,
-    unused_extern_crates,
-    unused_import_braces,
-    unused_qualifications,
-    variant_size_differences,
-    trivial_casts,
-    trivial_numeric_casts
-)]
 #[macro_use]
 extern crate failure;
+
+use nbted::{data, read, string_read, string_write, write, Result};
 
 use std::env;
 use std::fs::File;
@@ -23,17 +16,6 @@ use getopts::Options;
 use tempdir::TempDir;
 
 use failure::ResultExt;
-
-type Result<T> = std::result::Result<T, failure::Error>;
-
-pub mod data;
-pub mod iter_replacer;
-mod read;
-mod string_read;
-mod string_write;
-#[cfg(test)]
-mod tests;
-mod write;
 
 fn main() {
     match run_cmdline() {

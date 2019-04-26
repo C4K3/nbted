@@ -1,7 +1,8 @@
 #[macro_use]
 extern crate failure;
 
-use nbted::{data, read, string_read, string_write, write, Result};
+use nbted::unstable::{data, read, string_read, string_write, write};
+use nbted::Result;
 
 use std::env;
 use std::fs::File;

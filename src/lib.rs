@@ -1,3 +1,8 @@
+//! This was originally just a binary program, it was not meant to be used as a
+//! library. As such, the library functionality here has been hidden inside
+//! the "unstable" module. Use this module only with the understanding that
+//! the library is not 1.0 stable (only the binary is.)
+
 #![warn(
     unused_results,
     unused_extern_crates,
@@ -12,12 +17,6 @@ extern crate failure;
 
 pub type Result<T> = std::result::Result<T, failure::Error>;
 
-pub mod data;
-pub mod iter_replacer;
-pub mod read;
-pub mod string_read;
-pub mod string_write;
-pub mod write;
+pub mod unstable;
 
-#[cfg(test)]
-mod tests;
+use unstable::*;

@@ -1,3 +1,5 @@
+use crate::Result;
+
 /// Represents a single NBT tag
 #[derive(Clone, PartialEq, Debug)]
 pub enum NBT {
@@ -15,6 +17,29 @@ pub enum NBT {
     IntArray(Vec<i32>),
 }
 impl NBT {
+    pub fn get<S: AsRef<[u8]>>(&self, val: S) -> Option<&NBT> {
+        let s = match self {
+            NBT::Compound(s) => s,
+            _ => return None,
+        };
+
+        for (i, v) in s {
+            if i == &val.as_ref() {
+                return Some(v);
+            }
+        }
+
+        None
+    }
+
+    pub fn get_err(&self, val: &[u8]) -> Result<&NBT> {
+        match self {
+            NBT::Compound(_) => (),
+            _ => bail!("NBT was {}, not compound", self.type_string()),
+        }
+        self.get(val).ok_or_else(|| format_err!("No value in compound {}", String::from_utf8_lossy(val)))
+    }
+
     /// Returns the type of the tag as an English string
     pub fn type_string(&self) -> &str {
         match self {

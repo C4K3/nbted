@@ -52,6 +52,7 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT) -> Result<()> {
         &NBT::List(ref x) => write_list(w, x),
         &NBT::Compound(ref x) => write_compound(w, x, true),
         &NBT::IntArray(ref x) => write_int_array(w, x),
+        &NBT::LongArray(ref x) => write_long_array(w, x),
     }
 }
 
@@ -128,6 +129,16 @@ fn write_int_array<W: Write>(w: &mut W, val: &Vec<i32>) -> Result<()> {
 
     for x in val {
         write_int(w, *x)?;
+    }
+
+    Ok(())
+}
+
+fn write_long_array<W: Write>(w: &mut W, val: &Vec<i64>) -> Result<()> {
+    write_int(w, val.len() as i32)?;
+
+    for x in val {
+        write_long(w, *x)?;
     }
 
     Ok(())

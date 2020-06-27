@@ -162,6 +162,7 @@ fn read_tag(tokens: &mut Tokens, tag_type: &str) -> Result<NBT> {
         "List" => read_list(tokens),
         "Compound" => read_compound(tokens),
         "IntArray" => read_int_array(tokens),
+        "LongArray" => read_long_array(tokens),
         x => bail!("Unknown tag type {}", x),
     }
 }
@@ -310,4 +311,19 @@ fn read_int_array(tokens: &mut Tokens) -> Result<NBT> {
         });
     }
     Ok(NBT::IntArray(tmp))
+}
+
+fn read_long_array(tokens: &mut Tokens) -> Result<NBT> {
+    let len = match read_int(tokens)? {
+        NBT::Int(x) => x,
+        _ => unreachable!(),
+    };
+    let mut tmp = Vec::with_capacity(len as usize);
+    for _ in 0..len {
+        tmp.push(match read_long(tokens)? {
+            NBT::Long(x) => x,
+            _ => unreachable!(),
+        });
+    }
+    Ok(NBT::LongArray(tmp))
 }

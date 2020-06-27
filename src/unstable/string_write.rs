@@ -116,6 +116,13 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Res
                 writeln!(w, "{}", val)?;
             }
         }
+        &NBT::LongArray(ref x) => {
+            writeln!(w, " {}", x.len())?;
+            for val in x {
+                write_indent(w, indent)?;
+                writeln!(w, "{}", val)?;
+            }
+        }
     }
 
     Ok(())

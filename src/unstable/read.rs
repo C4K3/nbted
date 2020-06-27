@@ -77,6 +77,7 @@ fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
                 0x09 => read_list(reader)?,
                 0x0a => read_compound(reader)?,
                 0x0b => read_int_array(reader)?,
+                0x0c => read_long_array(reader)?,
                 x => {
                     bail!("Got unknown type id {:x} trying to read NBT compound", x);
                 }
@@ -167,6 +168,7 @@ fn read_list<R: Read>(reader: &mut R) -> Result<NBT> {
             0x9 => read_list(reader)?,
             0xa => read_compound(reader)?,
             0xb => read_int_array(reader)?,
+            0xc => read_long_array(reader)?,
             x => bail!("Got unknown type id {:x} trying to read NBT list", x),
         });
     }
@@ -190,4 +192,22 @@ fn read_int_array<R: Read>(reader: &mut R) -> Result<NBT> {
     }
 
     Ok(NBT::IntArray(ret))
+}
+
+fn read_long_array<R: Read>(reader: &mut R) -> Result<NBT> {
+    let length = match read_int(reader)? {
+        NBT::Int(val) => val as usize,
+        _ => unreachable!(),
+    };
+
+    let mut ret: Vec<i64> = Vec::new();
+
+    for _ in 0..length {
+        ret.push(match read_long(reader)? {
+            NBT::Long(val) => val,
+            _ => unreachable!(),
+        });
+    }
+
+    Ok(NBT::LongArray(ret))
 }

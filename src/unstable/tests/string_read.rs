@@ -71,6 +71,13 @@ fn invalid_tag_type() {
 }
 
 #[test]
+fn long_array() {
+    /* LongArray should compile */
+    let _: NBTFile =
+        try_parse_string(r#"None Compound "tag" Compound "BlockEntityTag" LongArray "Items" 0 String "id" "minecraft:shulker_box" End End End"#).unwrap();
+}
+
+#[test]
 fn unquoted_string() {
     /* Since the rewrite of the tokenizer, strings without quotation marks have
      * become valid syntax. I'm not sure if I want to keep this valid or not,

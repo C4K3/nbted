@@ -15,6 +15,7 @@ pub enum NBT {
     List(Vec<NBT>),
     Compound(Vec<(Vec<u8>, NBT)>),
     IntArray(Vec<i32>),
+    LongArray(Vec<i64>),
 }
 impl NBT {
     pub fn get<S: AsRef<[u8]>>(&self, val: S) -> Option<&NBT> {
@@ -55,6 +56,7 @@ impl NBT {
             &NBT::List(..) => "List",
             &NBT::Compound(..) => "Compound",
             &NBT::IntArray(..) => "IntArray",
+            &NBT::LongArray(..) => "LongArray",
         }
     }
     /// Returns the type of the tag as a single u8
@@ -72,6 +74,7 @@ impl NBT {
             &NBT::List(..) => 9,
             &NBT::Compound(..) => 10,
             &NBT::IntArray(..) => 11,
+            &NBT::LongArray(..) => 12,
         }
     }
 }

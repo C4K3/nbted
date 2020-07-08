@@ -45,37 +45,37 @@ impl NBT {
     /// Returns the type of the tag as an English string
     pub fn type_string(&self) -> &str {
         match self {
-            &NBT::End => "End",
-            &NBT::Byte(..) => "Byte",
-            &NBT::Short(..) => "Short",
-            &NBT::Int(..) => "Int",
-            &NBT::Long(..) => "Long",
-            &NBT::Float(..) => "Float",
-            &NBT::Double(..) => "Double",
-            &NBT::ByteArray(..) => "ByteArray",
-            &NBT::String(..) => "String",
-            &NBT::List(..) => "List",
-            &NBT::Compound(..) => "Compound",
-            &NBT::IntArray(..) => "IntArray",
-            &NBT::LongArray(..) => "LongArray",
+            NBT::End => "End",
+            NBT::Byte(..) => "Byte",
+            NBT::Short(..) => "Short",
+            NBT::Int(..) => "Int",
+            NBT::Long(..) => "Long",
+            NBT::Float(..) => "Float",
+            NBT::Double(..) => "Double",
+            NBT::ByteArray(..) => "ByteArray",
+            NBT::String(..) => "String",
+            NBT::List(..) => "List",
+            NBT::Compound(..) => "Compound",
+            NBT::IntArray(..) => "IntArray",
+            NBT::LongArray(..) => "LongArray",
         }
     }
     /// Returns the type of the tag as a single u8
     pub fn type_byte(&self) -> u8 {
         match self {
-            &NBT::End => 0,
-            &NBT::Byte(..) => 1,
-            &NBT::Short(..) => 2,
-            &NBT::Int(..) => 3,
-            &NBT::Long(..) => 4,
-            &NBT::Float(..) => 5,
-            &NBT::Double(..) => 6,
-            &NBT::ByteArray(..) => 7,
-            &NBT::String(..) => 8,
-            &NBT::List(..) => 9,
-            &NBT::Compound(..) => 10,
-            &NBT::IntArray(..) => 11,
-            &NBT::LongArray(..) => 12,
+            NBT::End => 0,
+            NBT::Byte(..) => 1,
+            NBT::Short(..) => 2,
+            NBT::Int(..) => 3,
+            NBT::Long(..) => 4,
+            NBT::Float(..) => 5,
+            NBT::Double(..) => 6,
+            NBT::ByteArray(..) => 7,
+            NBT::String(..) => 8,
+            NBT::List(..) => 9,
+            NBT::Compound(..) => 10,
+            NBT::IntArray(..) => 11,
+            NBT::LongArray(..) => 12,
         }
     }
 }
@@ -91,14 +91,15 @@ impl Compression {
     /// Returns the type of compression as an English string
     pub fn to_str(&self) -> &str {
         match self {
-            &Compression::None => "None",
-            &Compression::Gzip => "Gzip",
-            &Compression::Zlib => "Zlib",
+            Compression::None => "None",
+            Compression::Gzip => "Gzip",
+            Compression::Zlib => "Zlib",
         }
     }
     /// Given the name of a type of compression, return the corresponding
     /// Compression enum. Returns Some(Compression) if it exists, and None if no
     /// such Compression type exists
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(string: &str) -> Option<Self> {
         match string {
             "None" => Some(Compression::None),

@@ -104,7 +104,7 @@ fn run_cmdline() -> Result<i32> {
     } else {
         /* If edit is not explicitly defined, it is the default action and is
          * selected if no other action is specified */
-        (!(is_reverse || is_print))
+        !(is_reverse || is_print)
     };
 
     /* Hopefully this is a simpler way of ensuring that only one action can be
@@ -160,11 +160,11 @@ fn run_cmdline() -> Result<i32> {
     }
 
     if is_print {
-        return print(&input, &output);
+        print(&input, &output)
     } else if is_reverse {
-        return reverse(&input, &output);
+        reverse(&input, &output)
     } else if is_edit {
-        return edit(&input, &output);
+        edit(&input, &output)
     } else {
         bail!("Internal error: No action selected. (Please report this.)");
     }
@@ -299,7 +299,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
         "Unable to read temporary file. Nothing was changed."
     ))?;
 
-    string_read::read_file(&mut f).map_err(|e| e.into())
+    string_read::read_file(&mut f)
 }
 
 /// When the user wants to print an NBT file to text format

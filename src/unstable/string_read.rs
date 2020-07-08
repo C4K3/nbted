@@ -20,11 +20,7 @@ struct Tokens<'a> {
 }
 impl<'a> Tokens<'a> {
     fn new(file: &'a [u8]) -> Self {
-        Tokens {
-            file: file,
-            a: 0,
-            b: 0,
-        }
+        Tokens { file, a: 0, b: 0 }
     }
 }
 impl<'a> Iterator for Tokens<'a> {
@@ -82,7 +78,7 @@ impl<'a> Iterator for Tokens<'a> {
             let ret: Cow<str> = Cow::Owned(ret);
 
             self.a = self.b;
-            return Some(Ok(ret));
+            Some(Ok(ret))
         } else {
             /* The next token is not a string */
             self.b = self.a;
@@ -101,7 +97,7 @@ impl<'a> Iterator for Tokens<'a> {
             };
 
             self.a = self.b;
-            return Some(Ok(Cow::Borrowed(ret)));
+            Some(Ok(Cow::Borrowed(ret)))
         }
     }
 }
@@ -144,10 +140,7 @@ pub fn read_file<R: Read>(reader: &mut R) -> Result<NBTFile> {
 
     let root = read_compound(&mut tokens)?;
 
-    Ok(NBTFile {
-        root: root,
-        compression: compression,
-    })
+    Ok(NBTFile { root, compression })
 }
 
 fn read_tag(tokens: &mut Tokens, tag_type: &str) -> Result<NBT> {

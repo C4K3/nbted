@@ -5,7 +5,6 @@ use std::io::Write;
 
 use byteorder::{BigEndian, WriteBytesExt};
 
-use flate2;
 use flate2::write::{GzEncoder, ZlibEncoder};
 
 macro_rules! compression_level {
@@ -39,20 +38,20 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
 }
 
 fn write_tag<W: Write>(w: &mut W, tag: &NBT) -> Result<()> {
-    match tag {
-        &NBT::End => bail!("Unable to write End tag"),
-        &NBT::Byte(x) => write_byte(w, x),
-        &NBT::Short(x) => write_short(w, x),
-        &NBT::Int(x) => write_int(w, x),
-        &NBT::Long(x) => write_long(w, x),
-        &NBT::Float(x) => write_float(w, x),
-        &NBT::Double(x) => write_double(w, x),
-        &NBT::ByteArray(ref x) => write_byte_array(w, x),
-        &NBT::String(ref x) => write_string(w, x),
-        &NBT::List(ref x) => write_list(w, x),
-        &NBT::Compound(ref x) => write_compound(w, x, true),
-        &NBT::IntArray(ref x) => write_int_array(w, x),
-        &NBT::LongArray(ref x) => write_long_array(w, x),
+    match *tag {
+        NBT::End => bail!("Unable to write End tag"),
+        NBT::Byte(x) => write_byte(w, x),
+        NBT::Short(x) => write_short(w, x),
+        NBT::Int(x) => write_int(w, x),
+        NBT::Long(x) => write_long(w, x),
+        NBT::Float(x) => write_float(w, x),
+        NBT::Double(x) => write_double(w, x),
+        NBT::ByteArray(ref x) => write_byte_array(w, x),
+        NBT::String(ref x) => write_string(w, x),
+        NBT::List(ref x) => write_list(w, x),
+        NBT::Compound(ref x) => write_compound(w, x, true),
+        NBT::IntArray(ref x) => write_int_array(w, x),
+        NBT::LongArray(ref x) => write_long_array(w, x),
     }
 }
 
@@ -80,7 +79,7 @@ fn write_double<W: Write>(w: &mut W, val: f64) -> Result<()> {
     w.write_f64::<BigEndian>(val).map_err(|e| e.into())
 }
 
-fn write_byte_array<W: Write>(w: &mut W, val: &Vec<i8>) -> Result<()> {
+fn write_byte_array<W: Write>(w: &mut W, val: &[i8]) -> Result<()> {
     write_int(w, val.len() as i32)?;
 
     for x in val {
@@ -90,15 +89,20 @@ fn write_byte_array<W: Write>(w: &mut W, val: &Vec<i8>) -> Result<()> {
     Ok(())
 }
 
-fn write_string<W: Write>(w: &mut W, val: &Vec<u8>) -> Result<()> {
+fn write_string<W: Write>(w: &mut W, val: &[u8]) -> Result<()> {
     let bytes = &val;
     w.write_u16::<BigEndian>(bytes.len() as u16)?;
     w.write_all(bytes).map_err(|e| e.into())
 }
 
-fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> Result<()> {
+fn write_list<W: Write>(w: &mut W, val: &[NBT]) -> Result<()> {
     /* If the list has length 0, then it just defaults to type "End". */
-    let tag_type = if val.len() > 0 { val[0].type_byte() } else { 0 };
+    #[rustfmt::skip]
+    let tag_type = if val.is_empty() {
+        0
+    } else {
+        val[0].type_byte()
+    };
     w.write_all(&[tag_type])?;
     write_int(w, val.len() as i32)?;
 
@@ -109,7 +113,7 @@ fn write_list<W: Write>(w: &mut W, val: &Vec<NBT>) -> Result<()> {
     Ok(())
 }
 
-fn write_compound<W: Write>(w: &mut W, map: &Vec<(Vec<u8>, NBT)>, end: bool) -> Result<()> {
+fn write_compound<W: Write>(w: &mut W, map: &[(Vec<u8>, NBT)], end: bool) -> Result<()> {
     for &(ref key, ref tag) in map {
         w.write_all(&[tag.type_byte()])?;
         write_string(w, key)?;
@@ -124,7 +128,7 @@ fn write_compound<W: Write>(w: &mut W, map: &Vec<(Vec<u8>, NBT)>, end: bool) -> 
     Ok(())
 }
 
-fn write_int_array<W: Write>(w: &mut W, val: &Vec<i32>) -> Result<()> {
+fn write_int_array<W: Write>(w: &mut W, val: &[i32]) -> Result<()> {
     write_int(w, val.len() as i32)?;
 
     for x in val {
@@ -134,7 +138,7 @@ fn write_int_array<W: Write>(w: &mut W, val: &Vec<i32>) -> Result<()> {
     Ok(())
 }
 
-fn write_long_array<W: Write>(w: &mut W, val: &Vec<i64>) -> Result<()> {
+fn write_long_array<W: Write>(w: &mut W, val: &[i64]) -> Result<()> {
     write_int(w, val.len() as i32)?;
 
     for x in val {

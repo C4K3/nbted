@@ -37,7 +37,7 @@ where
     ///
     /// Panics if the 'a' slice is empty
     pub fn new(iter: I, a: &'a [A], b: &'a [B]) -> Self {
-        assert!(a.len() > 0, "the 'a' slice cannot be empty");
+        assert!(!a.is_empty(), "the 'a' slice cannot be empty");
         Replacer {
             iter: Some(iter),
             q: VecDeque::with_capacity(a.len()),

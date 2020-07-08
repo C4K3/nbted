@@ -15,52 +15,52 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
 }
 
 fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Result<()> {
-    match tag {
-        &NBT::End => (),
-        &NBT::Byte(x) => {
+    match *tag {
+        NBT::End => (),
+        NBT::Byte(x) => {
             if compound {
                 write!(w, " ")?;
             }
             writeln!(w, "{}", x)?;
         }
-        &NBT::Short(x) => {
+        NBT::Short(x) => {
             if compound {
                 write!(w, " ")?;
             }
             writeln!(w, "{}", x)?;
         }
-        &NBT::Int(x) => {
+        NBT::Int(x) => {
             if compound {
                 write!(w, " ")?;
             }
             writeln!(w, "{}", x)?;
         }
-        &NBT::Long(x) => {
+        NBT::Long(x) => {
             if compound {
                 write!(w, " ")?;
             }
             writeln!(w, "{}", x)?;
         }
-        &NBT::Float(x) => {
+        NBT::Float(x) => {
             if compound {
                 write!(w, " ")?;
             }
             writeln!(w, "{}", x)?;
         }
-        &NBT::Double(x) => {
+        NBT::Double(x) => {
             if compound {
                 write!(w, " ")?;
             }
             writeln!(w, "{}", x)?;
         }
-        &NBT::ByteArray(ref x) => {
+        NBT::ByteArray(ref x) => {
             writeln!(w, " {}", x.len())?;
             for val in x {
                 write_indent(w, indent)?;
                 writeln!(w, "{}", val)?;
             }
         }
-        &NBT::String(ref x) => {
+        NBT::String(ref x) => {
             if compound {
                 write!(w, " ")?;
             }
@@ -71,25 +71,25 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Res
             }
             writeln!(w, r#"""#)?;
         }
-        &NBT::List(ref x) => {
+        NBT::List(ref x) => {
             /* If the list has length 0, then it just defaults to type "End". */
-            let tag_type = if x.len() > 0 {
-                x[0].type_string()
-            } else {
+            let tag_type = if x.is_empty() {
                 "End"
+            } else {
+                x[0].type_string()
             };
             writeln!(w, " {} {}", tag_type, x.len())?;
             for val in x {
                 match val {
-                    &NBT::Compound(..) => (),
+                    NBT::Compound(..) => (),
                     _ => write_indent(w, indent)?,
                 }
                 write_tag(w, val, indent + 1, false)?;
             }
         }
-        &NBT::Compound(ref x) => {
+        NBT::Compound(ref x) => {
             if compound {
-                writeln!(w, "")?;
+                writeln!(w)?;
             }
             for &(ref key, ref val) in x {
                 write_indent(w, indent)?;
@@ -109,14 +109,14 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Res
             write_indent(w, indent)?;
             writeln!(w, "End")?;
         }
-        &NBT::IntArray(ref x) => {
+        NBT::IntArray(ref x) => {
             writeln!(w, " {}", x.len())?;
             for val in x {
                 write_indent(w, indent)?;
                 writeln!(w, "{}", val)?;
             }
         }
-        &NBT::LongArray(ref x) => {
+        NBT::LongArray(ref x) => {
             writeln!(w, " {}", x.len())?;
             for val in x {
                 write_indent(w, indent)?;

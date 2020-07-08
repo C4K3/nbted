@@ -12,7 +12,7 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
     /* Peek into the first byte of the reader, which is used to determine the
      * compression */
     let peek = match reader.fill_buf()? {
-        x if x.len() >= 1 => x[0],
+        x if !x.is_empty() => x[0],
         _ => bail!("Error peaking first byte in read::read_file, file was EOF"),
     };
 
@@ -27,10 +27,7 @@ pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
         Compression::Zlib => read_compound(&mut ZlibDecoder::new(reader))?,
     };
 
-    Ok(NBTFile {
-        root: root,
-        compression: compression,
-    })
+    Ok(NBTFile { root, compression })
 }
 
 /// Reads an NBT compound. I.e. assumes that the first byte from the Reader is

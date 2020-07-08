@@ -38,7 +38,8 @@ impl NBT {
             NBT::Compound(_) => (),
             _ => bail!("NBT was {}, not compound", self.type_string()),
         }
-        self.get(val).ok_or_else(|| format_err!("No value in compound {}", String::from_utf8_lossy(val)))
+        self.get(val)
+            .ok_or_else(|| format_err!("No value in compound {}", String::from_utf8_lossy(val)))
     }
 
     /// Returns the type of the tag as an English string

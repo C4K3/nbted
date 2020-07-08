@@ -39,6 +39,7 @@ impl<'a> Iterator for Tokens<'a> {
         if *self.file.get(self.a)? == 0x22 {
             /* The next token is a string */
             self.a += 1; /* So we don't include the beginning " */
+                         
             self.b = self.a;
 
             let mut escape: bool = false;

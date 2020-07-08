@@ -41,7 +41,9 @@ fn text_file_with_no_trailing_bytes() {
 
 #[test]
 fn incomplete_string() {
-    let err_msg = try_parse_string_get_err_msg(r#"None Compound "A quotation mark at the end has been removed from this otherwise valid NBT file End End"#);
+    let err_msg = try_parse_string_get_err_msg(
+        r#"None Compound "A quotation mark at the end has been removed from this otherwise valid NBT file End End"#,
+    );
     assert!(err_msg.contains("EOF when trying to read the name of a Compound tag in a compound"));
 }
 

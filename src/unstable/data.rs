@@ -1,4 +1,5 @@
 use crate::Result;
+use serde::Serialize;
 
 /// Represents a single NBT tag
 #[derive(Clone, PartialEq, Debug)]
@@ -81,7 +82,7 @@ impl NBT {
 }
 
 /// Represents the different compression formats NBT files can be in
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Serialize)]
 pub enum Compression {
     None,
     Gzip,
@@ -127,7 +128,7 @@ impl Compression {
 /// compression type.
 ///
 /// The root NBT tag will always be an NBT::Compound
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Serialize)]
 pub struct NBTFile {
     pub root: NBT,
     pub compression: Compression,

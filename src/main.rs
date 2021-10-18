@@ -49,6 +49,7 @@ fn run_cmdline() -> Result<i32> {
     If [FILE] is specified, then that file is edited in place, but specifying --input and/or --output will override the input/output.
     If no file is specified, default to read from --input and writing to --output.", "FILE");
     let _: &Options = opts.optflagopt("p", "print", "print NBT file to text format. Adding an argument to this is the same as specifying --input", "FILE");
+    let _: &Options = opts.optflag("j", "json", "instead of printing in text format, print the NBT file as JSON.");
     let _: &Options = opts.optflagopt("r", "reverse", "reverse a file in text format to NBT format. Adding an argument to this is the same as specifying --input", "FILE");
     let _: &Options = opts.optopt(
         "i",
@@ -97,6 +98,7 @@ fn run_cmdline() -> Result<i32> {
         return Ok(0);
     }
 
+    let is_json: bool = matches.opt_present("json");
     let is_print: bool = matches.opt_present("print");
     let is_reverse: bool = matches.opt_present("reverse");
     let is_edit: bool = if matches.opt_present("edit") {
@@ -106,6 +108,7 @@ fn run_cmdline() -> Result<i32> {
          * selected if no other action is specified */
         !(is_reverse || is_print)
     };
+
 
     /* Hopefully this is a simpler way of ensuring that only one action can be
      * taken than having a long logical expression */
@@ -160,7 +163,7 @@ fn run_cmdline() -> Result<i32> {
     }
 
     if is_print {
-        print(&input, &output)
+        print(&input, &output, is_json)
     } else if is_reverse {
         reverse(&input, &output)
     } else if is_edit {
@@ -303,7 +306,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
 }
 
 /// When the user wants to print an NBT file to text format
-fn print(input: &str, output: &str) -> Result<i32> {
+fn print(input: &str, output: &str, json: bool) -> Result<i32> {
     /* First we read a NBTFile from the input */
     let nbt = if input == "-" {
         let f = io::stdin();
@@ -331,10 +334,18 @@ fn print(input: &str, output: &str) -> Result<i32> {
          * with exit code 1. (It can generally be assumed that nbted will not
          * error in serializing the data, so any error here would be because of
          * writing to stdout) */
-        match string_write::write_file(&mut f, &nbt) {
-            Ok(()) => (),
-            Err(_) => return Ok(1),
+        if json {
+            match serde_json::to_writer(&mut f, &nbt) {
+                Ok(()) => (),
+                Err(_) => return Ok(1),
+            }
+        } else {
+            match string_write::write_file(&mut f, &nbt) {
+                Ok(()) => (),
+                Err(_) => return Ok(1),
+            }
         }
+
     } else {
         let path: &Path = Path::new(output);
         let f = File::create(&path).context(format_err!(

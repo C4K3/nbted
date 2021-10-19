@@ -1,6 +1,6 @@
-use crate::iter_replacer::ReplacerExt;
+use crate::{iter_replacer::ReplacerExt, unstable::iter_replacer::Replacer};
 
-use std::sync::mpsc::sync_channel;
+use std::{slice::Iter, sync::mpsc::sync_channel};
 
 #[test]
 fn noop() {
@@ -85,5 +85,5 @@ fn fuse() {
 #[should_panic]
 fn empty_replace_string() {
     let a: Vec<u8> = vec![0, 1];
-    let _ = a.iter().replacer(&[], &[1]);
+    let _: Replacer<'_, Iter<'_, u8>, u8, u8> = a.iter().replacer(&[], &[1]);
 }

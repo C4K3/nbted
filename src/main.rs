@@ -277,9 +277,9 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 /// closed again, read the temporary file and attempt to parse it into NBT,
 /// returning the result.
 fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
-    let editor = match env::var("EDITOR") {
+    let editor = match env::var("VISUAL") {
         Ok(x) => x,
-        Err(_) => match env::var("VISUAL") {
+        Err(_) => match env::var("EDITOR") {
             Ok(x) => x,
             Err(_) => bail!("Unable to find $EDITOR"),
         },

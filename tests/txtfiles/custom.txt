@@ -1,0 +1,37 @@
+None
+Compound "Root compound"
+	String "A string with newlines in it" "Line 1
+Line 2
+Line 3"
+	String "Strings can contain doublequotes" "\"Doublequoted\""
+	String "but doublequotes have to be escaped" "\"\"
+\"
+The string didn't end until here"
+	Long "Names
+Can
+Also
+Be
+Multiline" -1
+	Double "" 3.14
+	ByteArray "It shouldn't be a problem if a string ends in \\\\\\\\" 5
+		0
+		1
+		1
+		2
+		3
+	String "Or other amounts of \\" "\\\\"
+	List "Lists can contain lists" List 2
+		 String 1
+			"This is a list that contains one String. The next list is empty."
+		 End 0
+	ByteArray "Empty ByteArray" 0
+	IntArray "Empty IntArray" 0
+	Compound "Empty Compound"
+		End
+	End
+Compound "We can put more than one item in the implicit compound"
+	List "Empty lists are supposed to have type End" End 0
+	String "Explanation" "If empty lists have any other type they will be converted to End"
+	End
+Short "We can also put items other than compounds in the implicit compound" 1337
+End

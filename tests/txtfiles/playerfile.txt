@@ -1,0 +1,800 @@
+None
+Compound ""
+	Int "HurtByTimestamp" 184545959
+	Compound "bukkit"
+		Int "newLevel" 0
+		Int "newExp" 0
+		Int "newTotalExp" 0
+		Long "firstPlayed" 1303584100000
+		String "lastKnownName" "Yukarion"
+		Byte "keepLevel" 0
+		Int "expToDrop" 0
+		Long "lastPlayed" 1483322756414
+		End
+	Short "SleepTimer" 0
+	Byte "SpawnForced" 0
+	List "Attributes" Compound 8
+			Double "Base" 20
+			String "Name" "generic.maxHealth"
+			End
+			Double "Base" 0
+			String "Name" "generic.knockbackResistance"
+			End
+			Double "Base" 0.10000000149011612
+			String "Name" "generic.movementSpeed"
+			End
+			Double "Base" 0
+			String "Name" "generic.armor"
+			End
+			Double "Base" 0
+			String "Name" "generic.armorToughness"
+			End
+			Double "Base" 1
+			String "Name" "generic.attackDamage"
+			End
+			Double "Base" 4
+			String "Name" "generic.attackSpeed"
+			End
+			Double "Base" 0
+			String "Name" "generic.luck"
+			End
+	Byte "Invulnerable" 0
+	Byte "FallFlying" 0
+	Int "PortalCooldown" 0
+	Float "AbsorptionAmount" 0
+	Compound "abilities"
+		Byte "invulnerable" 1
+		Byte "mayfly" 1
+		Byte "instabuild" 1
+		Float "walkSpeed" 0.1
+		Byte "mayBuild" 1
+		Byte "flying" 0
+		Float "flySpeed" 0.05
+		End
+	Float "FallDistance" 0
+	Short "DeathTime" 0
+	Int "XpSeed" 535721141
+	Long "WorldUUIDMost" -673401623961386482
+	Int "Spigot.ticksLived" 186901455
+	Int "XpTotal" 3
+	Int "playerGameType" 1
+	List "Motion" Double 3
+		0
+		-0.0784000015258789
+		0
+	Int "SpawnY" 241
+	Long "UUIDLeast" -8057916744419625854
+	Float "Health" 20
+	Int "SpawnZ" 26
+	Int "Bukkit.updateLevel" 2
+	Float "foodSaturationLevel" 20
+	Int "SpawnX" -22
+	Short "Air" 300
+	Byte "OnGround" 1
+	Int "Dimension" 0
+	List "Rotation" Float 2
+		273.90198
+		25.499928
+	Int "XpLevel" 6
+	Int "Score" 9267
+	Long "UUIDMost" -4178410798104229762
+	Byte "Sleeping" 0
+	List "Pos" Double 3
+		5514.612835970114
+		255
+		-31.191669974202412
+	Short "Fire" -20
+	Float "XpP" 0.15789473
+	List "EnderItems" Compound 27
+			Byte "Slot" 0
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					List "Items" Compound 2
+							Byte "Slot" 0
+							String "id" "minecraft:filled_map"
+							Byte "Count" 1
+							Compound "tag"
+								Compound "display"
+									String "Name" "Remember, I'm watching you."
+									End
+								End
+							Short "Damage" 1733
+							End
+							Byte "Slot" 1
+							String "id" "minecraft:filled_map"
+							Byte "Count" 1
+							Compound "tag"
+								Compound "display"
+									String "Name" "MisterStrawman's Self Portrait"
+									End
+								End
+							Short "Damage" 1733
+							End
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 1
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					List "Items" Compound 11
+							Byte "Slot" 0
+							String "id" "minecraft:diamond"
+							Byte "Count" 10
+							Short "Damage" 0
+							End
+							Byte "Slot" 1
+							String "id" "minecraft:redstone_block"
+							Byte "Count" 49
+							Short "Damage" 0
+							End
+							Byte "Slot" 2
+							String "id" "minecraft:coal_block"
+							Byte "Count" 31
+							Short "Damage" 0
+							End
+							Byte "Slot" 3
+							String "id" "minecraft:dye"
+							Byte "Count" 44
+							Short "Damage" 4
+							End
+							Byte "Slot" 4
+							String "id" "minecraft:emerald_block"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 5
+							String "id" "minecraft:coal"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 6
+							String "id" "minecraft:ender_pearl"
+							Byte "Count" 16
+							Short "Damage" 0
+							End
+							Byte "Slot" 7
+							String "id" "minecraft:coal"
+							Byte "Count" 42
+							Short "Damage" 0
+							End
+							Byte "Slot" 9
+							String "id" "minecraft:enchanted_book"
+							Byte "Count" 1
+							Compound "tag"
+								List "StoredEnchantments" Compound 1
+										Short "lvl" 1
+										Short "id" 70
+										End
+								End
+							Short "Damage" 0
+							End
+							Byte "Slot" 10
+							String "id" "minecraft:iron_block"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 11
+							String "id" "minecraft:iron_block"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 2
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					List "Items" Compound 27
+							Byte "Slot" 0
+							String "id" "minecraft:cooked_fish"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 1
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 2
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 3
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 4
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 5
+							String "id" "minecraft:log"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 6
+							String "id" "minecraft:log"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 7
+							String "id" "minecraft:sign"
+							Byte "Count" 16
+							Short "Damage" 0
+							End
+							Byte "Slot" 8
+							String "id" "minecraft:sign"
+							Byte "Count" 16
+							Short "Damage" 0
+							End
+							Byte "Slot" 9
+							String "id" "minecraft:cobblestone"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 10
+							String "id" "minecraft:cobblestone"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 11
+							String "id" "minecraft:cooked_porkchop"
+							Byte "Count" 38
+							Short "Damage" 0
+							End
+							Byte "Slot" 12
+							String "id" "minecraft:torch"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 13
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 14
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 15
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 16
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 17
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 18
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 19
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 20
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 21
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 22
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 23
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 24
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 25
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 26
+							String "id" "minecraft:carrot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 3
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					List "Items" Compound 9
+							Byte "Slot" 0
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 1
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 2
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 3
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 4
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 5
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 6
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 7
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 8
+							String "id" "minecraft:cactus"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 4
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					List "Items" Compound 13
+							Byte "Slot" 0
+							String "id" "minecraft:diamond_chestplate"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 1
+							String "id" "minecraft:diamond_leggings"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 2
+							String "id" "minecraft:diamond_helmet"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 3
+							String "id" "minecraft:diamond_boots"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 4
+							String "id" "minecraft:chainmail_boots"
+							Byte "Count" 1
+							Compound "tag"
+								List "ench" Compound 4
+										Short "lvl" 4
+										Short "id" 0
+										End
+										Short "lvl" 2
+										Short "id" 8
+										End
+										Short "lvl" 3
+										Short "id" 34
+										End
+										Short "lvl" 4
+										Short "id" 2
+										End
+								Int "RepairCost" 7
+								End
+							Short "Damage" 0
+							End
+							Byte "Slot" 5
+							String "id" "minecraft:iron_ingot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 6
+							String "id" "minecraft:iron_ingot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 7
+							String "id" "minecraft:iron_ingot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 8
+							String "id" "minecraft:iron_ingot"
+							Byte "Count" 64
+							Short "Damage" 0
+							End
+							Byte "Slot" 9
+							String "id" "minecraft:lava_bucket"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 10
+							String "id" "minecraft:lava_bucket"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 11
+							String "id" "minecraft:saddle"
+							Byte "Count" 1
+							Short "Damage" 0
+							End
+							Byte "Slot" 12
+							String "id" "minecraft:potion"
+							Byte "Count" 1
+							Compound "tag"
+								String "Potion" "minecraft:strong_regeneration"
+								End
+							Short "Damage" 0
+							End
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 5
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 6
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 7
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 8
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 9
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 10
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 11
+			String "id" "minecraft:purple_shulker_box"
+			Byte "Count" 1
+			Compound "tag"
+				Compound "BlockEntityTag"
+					End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 12
+			String "id" "minecraft:iron_shovel"
+			Byte "Count" 1
+			Short "Damage" 1
+			End
+			Byte "Slot" 13
+			String "id" "minecraft:iron_pickaxe"
+			Byte "Count" 1
+			Short "Damage" 90
+			End
+			Byte "Slot" 14
+			String "id" "minecraft:iron_sword"
+			Byte "Count" 1
+			Short "Damage" 16
+			End
+			Byte "Slot" 15
+			String "id" "minecraft:cooked_fish"
+			Byte "Count" 57
+			Short "Damage" 0
+			End
+			Byte "Slot" 16
+			String "id" "minecraft:bow"
+			Byte "Count" 1
+			Compound "tag"
+				List "ench" Compound 3
+						Short "lvl" 4
+						Short "id" 48
+						End
+						Short "lvl" 3
+						Short "id" 34
+						End
+						Short "lvl" 1
+						Short "id" 50
+						End
+				End
+			Short "Damage" 32
+			End
+			Byte "Slot" 17
+			String "id" "minecraft:lava_bucket"
+			Byte "Count" 1
+			Short "Damage" 0
+			End
+			Byte "Slot" 18
+			String "id" "minecraft:bow"
+			Byte "Count" 1
+			Compound "tag"
+				List "ench" Compound 2
+						Short "lvl" 4
+						Short "id" 48
+						End
+						Short "lvl" 1
+						Short "id" 51
+						End
+				End
+			Short "Damage" 0
+			End
+			Byte "Slot" 19
+			String "id" "minecraft:iron_ingot"
+			Byte "Count" 26
+			Short "Damage" 0
+			End
+			Byte "Slot" 20
+			String "id" "minecraft:golden_leggings"
+			Byte "Count" 1
+			Short "Damage" 31
+			End
+			Byte "Slot" 21
+			String "id" "minecraft:flint_and_steel"
+			Byte "Count" 1
+			Short "Damage" 6
+			End
+			Byte "Slot" 22
+			String "id" "minecraft:cooked_fish"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 23
+			String "id" "minecraft:diamond_pickaxe"
+			Byte "Count" 1
+			Compound "tag"
+				List "ench" Compound 4
+						Short "lvl" 5
+						Short "id" 32
+						End
+						Short "lvl" 1
+						Short "id" 33
+						End
+						Short "lvl" 3
+						Short "id" 34
+						End
+						Short "lvl" 1
+						Short "id" 70
+						End
+				Int "RepairCost" 7
+				End
+			Short "Damage" 356
+			End
+			Byte "Slot" 24
+			String "id" "minecraft:diamond_sword"
+			Byte "Count" 1
+			Compound "tag"
+				List "ench" Compound 2
+						Short "lvl" 4
+						Short "id" 16
+						End
+						Short "lvl" 3
+						Short "id" 34
+						End
+				End
+			Short "Damage" 18
+			End
+			Byte "Slot" 25
+			String "id" "minecraft:iron_boots"
+			Byte "Count" 1
+			Compound "tag"
+				List "ench" Compound 3
+						Short "lvl" 3
+						Short "id" 0
+						End
+						Short "lvl" 3
+						Short "id" 34
+						End
+						Short "lvl" 1
+						Short "id" 70
+						End
+				End
+			Short "Damage" 13
+			End
+			Byte "Slot" 26
+			String "id" "minecraft:iron_ingot"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+	Int "DataVersion" 922
+	Int "foodLevel" 20
+	Float "foodExhaustionLevel" 0
+	Short "HurtTime" 0
+	Int "SelectedItemSlot" 7
+	String "SpawnWorld" "world"
+	Long "WorldUUIDLeast" -7399139124349246038
+	List "Inventory" Compound 22
+			Byte "Slot" 0
+			String "id" "minecraft:iron_sword"
+			Byte "Count" 1
+			Short "Damage" 28
+			End
+			Byte "Slot" 7
+			String "id" "minecraft:chest"
+			Byte "Count" 7
+			Short "Damage" 0
+			End
+			Byte "Slot" 8
+			String "id" "minecraft:cobblestone"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 9
+			String "id" "minecraft:dirt"
+			Byte "Count" 61
+			Short "Damage" 0
+			End
+			Byte "Slot" 10
+			String "id" "minecraft:torch"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 11
+			String "id" "minecraft:stone_sword"
+			Byte "Count" 1
+			Short "Damage" 72
+			End
+			Byte "Slot" 12
+			String "id" "minecraft:coal"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 13
+			String "id" "minecraft:planks"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 14
+			String "id" "minecraft:melon"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 15
+			String "id" "minecraft:planks"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 18
+			String "id" "minecraft:planks"
+			Byte "Count" 28
+			Short "Damage" 0
+			End
+			Byte "Slot" 19
+			String "id" "minecraft:melon"
+			Byte "Count" 28
+			Short "Damage" 0
+			End
+			Byte "Slot" 20
+			String "id" "minecraft:baked_potato"
+			Byte "Count" 64
+			Short "Damage" 0
+			End
+			Byte "Slot" 21
+			String "id" "minecraft:torch"
+			Byte "Count" 31
+			Short "Damage" 0
+			End
+			Byte "Slot" 22
+			String "id" "minecraft:baked_potato"
+			Byte "Count" 10
+			Short "Damage" 0
+			End
+			Byte "Slot" 23
+			String "id" "minecraft:diamond_pickaxe"
+			Byte "Count" 1
+			Short "Damage" 723
+			End
+			Byte "Slot" 32
+			String "id" "minecraft:stick"
+			Byte "Count" 12
+			Short "Damage" 0
+			End
+			Byte "Slot" 35
+			String "id" "minecraft:iron_hoe"
+			Byte "Count" 1
+			Short "Damage" 24
+			End
+			Byte "Slot" 100
+			String "id" "minecraft:iron_boots"
+			Byte "Count" 1
+			Short "Damage" 130
+			End
+			Byte "Slot" 101
+			String "id" "minecraft:iron_leggings"
+			Byte "Count" 1
+			Short "Damage" 135
+			End
+			Byte "Slot" 102
+			String "id" "minecraft:iron_chestplate"
+			Byte "Count" 1
+			Short "Damage" 136
+			End
+			Byte "Slot" 103
+			String "id" "minecraft:iron_helmet"
+			Byte "Count" 1
+			Short "Damage" 2
+			End
+	Int "foodTickTimer" 0
+	End
+End

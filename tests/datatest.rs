@@ -50,15 +50,15 @@ fn complete_loop_from_enum(original: &NBTFile) {
     assert_eq!(original, &nbtfile);
 }
 
-// Reads an uncompressed NBT file and then write it back as an NBT file checking that the result
-// matches the original byte-for-byte
+/// Reads an uncompressed NBT file and then write it back as an NBT file checking that the result
+/// matches the original byte-for-byte
 fn uncompressed_nbt_file_byte_for_byte(path: &Path) -> datatest_stable::Result<()> {
     let file = std::fs::read(path).unwrap();
     complete_loop_from_nbt(&file);
     Ok(())
 }
 
-fn nbt_file_loop(path: &Path) -> datatest_stable::Result<()> {
+fn nbt_file_decode_encode(path: &Path) -> datatest_stable::Result<()> {
     let file = std::fs::read(path).unwrap();
     let mut cursor = Cursor::new(file);
     let nbtfile = nbted::unstable::read::read_file(&mut cursor).unwrap();
@@ -66,7 +66,52 @@ fn nbt_file_loop(path: &Path) -> datatest_stable::Result<()> {
     Ok(())
 }
 
+/// Tests reading and then re-writing nbted-format text files, ensuring they're encoding
+/// identically.
+fn txt_file_decode_encode(path: &Path) -> datatest_stable::Result<()> {
+    let file = std::fs::read(path).unwrap();
+    let nbtfile = nbted::unstable::string_read::read_file(&mut Cursor::new(&file)).unwrap();
+    let mut encoded = Vec::with_capacity(file.len());
+    nbted::unstable::string_write::write_file(&mut encoded, &nbtfile).unwrap();
+    assert_eq!(file, encoded);
+    Ok(())
+}
+
+/// Compares the decoding of given nbt files with corresponding saved txt files.
+///
+/// Only compares uncompressed.nbt files. Any such file must have a corresponding .txt file in
+/// tests/txtfiles.
+fn compare_nbt_txt(path: &Path) -> datatest_stable::Result<()> {
+    let nbt = {
+        let file = std::fs::read(path).unwrap();
+        nbted::unstable::read::read_file(&mut Cursor::new(&file)).unwrap()
+    };
+
+    let txt = {
+        // Get the path to /tests
+        let mut txt_path = path.parent().unwrap().parent().unwrap().to_path_buf();
+        txt_path.push("txtfiles");
+
+        let filename_prefix = path
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .trim_end_matches(".uncompressed.nbt");
+        txt_path.push(format!("{}.txt", filename_prefix));
+
+        let file = std::fs::read(&txt_path).unwrap();
+        nbted::unstable::string_read::read_file(&mut Cursor::new(&file)).unwrap()
+    };
+
+    assert_eq!(nbt, txt);
+
+    Ok(())
+}
+
 datatest_stable::harness! {
     { test = uncompressed_nbt_file_byte_for_byte, root = "tests/nbtfiles", pattern = "^.*\\.uncompressed\\.nbt$" },
-    { test = nbt_file_loop, root = "tests/nbtfiles" },
+    { test = nbt_file_decode_encode, root = "tests/nbtfiles" },
+    { test = txt_file_decode_encode, root = "tests/txtfiles" },
+    { test = compare_nbt_txt, root = "tests/nbtfiles", pattern = "^.*\\.uncompressed\\.nbt$" },
 }

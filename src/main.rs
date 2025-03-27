@@ -14,8 +14,6 @@ use std::process::Command;
 
 use getopts::Options;
 
-use tempdir::TempDir;
-
 use failure::ResultExt;
 
 fn main() {
@@ -193,7 +191,10 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 
     /* Then we create a temporary file and write the NBT data in text format
      * to the temporary file */
-    let tmpdir = TempDir::new("nbted").context("Unable to create temporary directory")?;
+    let tmpdir = tempfile::Builder::new()
+        .prefix("nbted")
+        .tempdir()
+        .context("Unable to create temporary directory")?;
 
     let tmp = match Path::new(input).file_name() {
         Some(x) => {

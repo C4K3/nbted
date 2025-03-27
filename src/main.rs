@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate failure;
-
 use nbted::unstable::{data, read, string_read, string_write, write};
 use nbted::Result;
 
@@ -14,7 +11,7 @@ use std::process::Command;
 
 use getopts::Options;
 
-use failure::ResultExt;
+use anyhow::{bail, format_err, Context};
 
 fn main() {
     match run_cmdline() {
@@ -25,8 +22,8 @@ fn main() {
             eprintln!("{}", e.backtrace());
 
             eprintln!("Error: {}", e);
-
-            for e in e.iter_chain().skip(1) {
+            // Skip first error because it gets printed above
+            for e in e.chain().skip(1) {
                 eprintln!("	caused by: {}", e);
             }
 
@@ -219,7 +216,7 @@ fn edit(input: &str, output: &str) -> Result<i32> {
 
         while let Err(e) = new_nbt {
             eprintln!("Unable to parse edited file");
-            for e in e.iter_chain() {
+            for e in e.chain() {
                 eprintln!("	caused by: {}", e);
             }
             eprintln!("Do you want to open the file for editing again? (y/N)");
@@ -377,10 +374,12 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).context(format_err!(
-            "Unable to write to output NBT file {}. Nothing was changed",
-            output
-        ))?;
+        let f = File::create(&path).with_context(|| {
+            format_err!(
+                "Unable to write to output NBT file {}. Nothing was changed",
+                output
+            )
+        })?;
         let mut f = BufWriter::new(f);
 
         write::write_file(&mut f, &nbt).context(

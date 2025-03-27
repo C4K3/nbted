@@ -7,6 +7,8 @@ use byteorder::{BigEndian, ReadBytesExt};
 
 use flate2::read::{GzDecoder, ZlibDecoder};
 
+use anyhow::bail;
+
 /// Read an NBT file from the given reader
 pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
     /* Peek into the first byte of the reader, which is used to determine the

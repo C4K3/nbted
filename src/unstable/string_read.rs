@@ -5,7 +5,7 @@ use std::borrow::Cow;
 use std::io::Read;
 use std::str;
 
-use failure::ResultExt;
+use anyhow::{anyhow, bail, Context};
 
 /// A struct for iterating over the tokens in a given file
 ///
@@ -35,7 +35,7 @@ impl<'a> Iterator for Tokens<'a> {
         if *self.file.get(self.a)? == 0x22 {
             /* The next token is a string */
             self.a += 1; /* So we don't include the beginning " */
-                         
+
             self.b = self.a;
 
             let mut escape: bool = false;
@@ -53,7 +53,7 @@ impl<'a> Iterator for Tokens<'a> {
                             self.b += 1;
                             break;
                         }
-                    },
+                    }
                     0x5c => {
                         if escape {
                             ret.push(0x5c);
@@ -61,11 +61,13 @@ impl<'a> Iterator for Tokens<'a> {
                         } else {
                             escape = true;
                         }
-                    },
+                    }
                     x if escape => {
-                        return Some(Err(
-                            format_err!(r#"Invalid string, tried to escape the character {} which cannot be escaped (to enter a literal \, write \\)"#, x)))
-                    },
+                        return Some(Err(anyhow!(
+                            r#"Invalid string, tried to escape the character {} which cannot be escaped (to enter a literal \, write \\)"#,
+                            x
+                        )))
+                    }
                     x => ret.push(*x),
                 }
                 self.b += 1;
@@ -166,7 +168,9 @@ fn read_byte(tokens: &mut Tokens) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read a byte"),
     };
-    let val = val.parse::<i8>().context(format!("Invalid Byte {}", val))?;
+    let val = val
+        .parse::<i8>()
+        .with_context(|| format!("Invalid Byte {}", val))?;
     Ok(NBT::Byte(val))
 }
 

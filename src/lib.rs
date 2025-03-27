@@ -12,10 +12,8 @@
     trivial_casts,
     trivial_numeric_casts
 )]
-#[macro_use]
-extern crate failure;
 
-pub type Result<T> = std::result::Result<T, failure::Error>;
+pub type Result<T> = std::result::Result<T, anyhow::Error>;
 
 pub mod unstable;
 

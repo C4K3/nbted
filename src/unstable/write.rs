@@ -7,6 +7,8 @@ use byteorder::{BigEndian, WriteBytesExt};
 
 use flate2::write::{GzEncoder, ZlibEncoder};
 
+use anyhow::bail;
+
 macro_rules! compression_level {
     () => {
         flate2::Compression::default()

@@ -71,7 +71,7 @@ where
         self.q.len() == self.a.len()
     }
 }
-impl<'a, I, A, B> Iterator for Replacer<'a, I, A, B>
+impl<I, A, B> Iterator for Replacer<'_, I, A, B>
 where
     I: Iterator,
     I::Item: Borrow<B>,

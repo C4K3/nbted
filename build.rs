@@ -10,7 +10,7 @@ fn main() {
     /* Figure out the current git revision */
     let git: String = match Command::new("git").arg("rev-parse").arg("HEAD").output() {
         Ok(x) => match String::from_utf8(x.stdout) {
-            Ok(x) => format!(r#""{}""#, x.trim().to_string()),
+            Ok(x) => format!(r#""{}""#, x.trim()),
             Err(e) => {
                 println!("cargo:warning=build script got invalid output trying to get latest git revision: {:?}",
                                  e);

@@ -65,7 +65,7 @@ fn run_cmdline() -> Result<i32> {
 
     if matches.opt_present("h") {
         let brief = "Usage: nbted [options] FILE";
-        print!("{}", opts.usage(&brief));
+        print!("{}", opts.usage(brief));
         println!("\nThe default action, taken if no action is explicitly selected, is to --edit.");
         println!(
             "\nFor detailed usage information, read the nbted man page. If the nbted man page\
@@ -256,7 +256,7 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).context(format_err!(
+        let f = File::create(path).context(format_err!(
             "Unable to write to output NBT file {}. Nothing was changed",
             output
         ))?;
@@ -284,7 +284,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
     };
 
     let mut cmd = Command::new(editor);
-    let _: &mut Command = cmd.arg(&tmp_path.as_os_str());
+    let _: &mut Command = cmd.arg(tmp_path.as_os_str());
     let mut cmd = cmd.spawn().context("Error opening editor")?;
 
     match cmd.wait().context("error executing editor")? {
@@ -293,7 +293,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
     }
 
     /* Then we parse the text format in the temporary file into NBT */
-    let mut f = File::open(&tmp_path).context(format_err!(
+    let mut f = File::open(tmp_path).context(format_err!(
         "Unable to read temporary file. Nothing was changed."
     ))?;
 
@@ -335,7 +335,7 @@ fn print(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).context(format_err!(
+        let f = File::create(path).context(format_err!(
             "Unable to write to output NBT file {}. Nothing was changed.",
             output
         ))?;
@@ -355,7 +355,7 @@ fn print(input: &str, output: &str) -> Result<i32> {
 fn reverse(input: &str, output: &str) -> Result<i32> {
     /* First we read the input file in the text format */
     let path: &Path = Path::new(input);
-    let mut f = File::open(&path).context(format_err!("Unable to read text file {}", input))?;
+    let mut f = File::open(path).context(format_err!("Unable to read text file {}", input))?;
 
     let nbt = string_read::read_file(&mut f)
         .context(format_err!("Unable to parse text file {}", input))?;
@@ -374,7 +374,7 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(&path).with_context(|| {
+        let f = File::create(path).with_context(|| {
             format_err!(
                 "Unable to write to output NBT file {}. Nothing was changed",
                 output

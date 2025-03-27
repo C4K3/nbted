@@ -91,7 +91,7 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Res
             if compound {
                 writeln!(w)?;
             }
-            for &(ref key, ref val) in x {
+            for (key, val) in x {
                 write_indent(w, indent)?;
                 w.write_all(val.type_string().as_bytes())?;
                 write!(w, r#" ""#)?;

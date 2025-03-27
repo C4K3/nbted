@@ -27,7 +27,7 @@ impl NBT {
         };
 
         for (i, v) in s {
-            if i == &val.as_ref() {
+            if i == val.as_ref() {
                 return Some(v);
             }
         }

@@ -23,7 +23,7 @@ pub fn write_file<W: Write>(w: &mut W, file: &NBTFile) -> Result<()> {
     };
 
     match file.compression {
-        Compression::None => write_compound(w, &map, false)?,
+        Compression::None => write_compound(w, map, false)?,
         Compression::Gzip => {
             let mut w = GzEncoder::new(w, compression_level!());
             write_compound(&mut w, map, false)?;
@@ -116,10 +116,10 @@ fn write_list<W: Write>(w: &mut W, val: &[NBT]) -> Result<()> {
 }
 
 fn write_compound<W: Write>(w: &mut W, map: &[(Vec<u8>, NBT)], end: bool) -> Result<()> {
-    for &(ref key, ref tag) in map {
+    for (key, tag) in map {
         w.write_all(&[tag.type_byte()])?;
         write_string(w, key)?;
-        write_tag(w, &tag)?;
+        write_tag(w, tag)?;
     }
 
     /* Append the End tag, but not on the implicit Compound */

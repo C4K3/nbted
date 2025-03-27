@@ -62,4 +62,4 @@ cargo build --release
 ```
 Be sure to run the tests if making changes.
 
-nbted is also available for installation on crates.io (`cargo install nbted`) and the AUR.
+nbted is also available for installation on crates.io (`cargo install nbted`).

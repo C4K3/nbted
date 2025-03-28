@@ -1,0 +1,5 @@
+invalidcompression
+Compound "hello world"
+	String "name" "Bananrama"
+	End
+End

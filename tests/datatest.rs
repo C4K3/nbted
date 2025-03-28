@@ -79,8 +79,9 @@ fn txt_file_decode_encode(path: &Path) -> datatest_stable::Result<()> {
 
 /// Compares the decoding of given nbt files with corresponding saved txt files.
 ///
-/// Only compares uncompressed.nbt files. Any such file must have a corresponding .txt file in
-/// tests/txtfiles.
+/// Each file in `nbtfiles` is expected to have a corresponding txt file in `string_write`. Why
+/// string_write? Because we expect the files used for comparison to be encoded in default
+/// settings.
 fn compare_nbt_txt(path: &Path) -> datatest_stable::Result<()> {
     let nbt = {
         let file = std::fs::read(path).unwrap();
@@ -88,17 +89,13 @@ fn compare_nbt_txt(path: &Path) -> datatest_stable::Result<()> {
     };
 
     let txt = {
-        // Get the path to /tests
-        let mut txt_path = path.parent().unwrap().parent().unwrap().to_path_buf();
-        txt_path.push("txtfiles");
-
-        let filename_prefix = path
-            .file_name()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .trim_end_matches(".uncompressed.nbt");
-        txt_path.push(format!("{}.txt", filename_prefix));
+        let mut txt_path = path.to_path_buf();
+        let file_name = path.file_name().unwrap();
+        txt_path.pop();
+        txt_path.pop();
+        txt_path.push("string_write");
+        txt_path.push(file_name);
+        txt_path.set_extension("txt");
 
         let file = std::fs::read(&txt_path).unwrap();
         nbted::unstable::string_read::read_file(&mut Cursor::new(&file)).unwrap()
@@ -109,9 +106,35 @@ fn compare_nbt_txt(path: &Path) -> datatest_stable::Result<()> {
     Ok(())
 }
 
+/// Tests that the given txt files can be read, but if written again it won't necessarily match the
+/// input.
+fn string_read(path: &Path) -> datatest_stable::Result<()> {
+    let file = std::fs::read(path).unwrap();
+    nbted::unstable::string_read::read_file(&mut Cursor::new(&file)).unwrap();
+    Ok(())
+}
+
+/// Tries to read invalid txt files and compares the resulting error against an expected error.
+fn string_read_err(path: &Path) -> datatest_stable::Result<()> {
+    let file = std::fs::read(path).unwrap();
+    let err = nbted::unstable::string_read::read_file(&mut Cursor::new(&file)).unwrap_err();
+
+    let expected_err: String = {
+        let mut err_path = path.to_path_buf();
+        err_path.set_extension("err");
+        std::fs::read_to_string(err_path).unwrap()
+    };
+
+    assert_eq!(err.to_string(), expected_err);
+
+    Ok(())
+}
+
 datatest_stable::harness! {
     { test = uncompressed_nbt_file_byte_for_byte, root = "tests/nbtfiles", pattern = "^.*\\.uncompressed\\.nbt$" },
     { test = nbt_file_decode_encode, root = "tests/nbtfiles" },
-    { test = txt_file_decode_encode, root = "tests/txtfiles" },
-    { test = compare_nbt_txt, root = "tests/nbtfiles", pattern = "^.*\\.uncompressed\\.nbt$" },
+    { test = txt_file_decode_encode, root = "tests/string_write" },
+    { test = compare_nbt_txt, root = "tests/nbtfiles" },
+    { test = string_read, root = "tests/string_read" },
+    { test = string_read_err, root = "tests/string_read_err", pattern = "^.*\\.txt" },
 }

@@ -105,6 +105,7 @@ impl Compression {
     pub fn from_str(string: &str) -> Option<Self> {
         match string {
             "None" => Some(Compression::None),
+            "Uncompressed" => Some(Compression::None),
             "Gzip" => Some(Compression::Gzip),
             "Zlib" => Some(Compression::Zlib),
             _ => None,

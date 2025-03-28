@@ -1,0 +1,8 @@
+None
+Compound "Root compound"
+List "list" Int[4]
+1
+2
+3
+End
+End

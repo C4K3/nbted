@@ -1,0 +1,6 @@
+None
+Compound "Root compound"
+List "list" String1
+"one"
+End
+End

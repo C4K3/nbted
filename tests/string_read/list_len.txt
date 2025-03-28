@@ -1,0 +1,10 @@
+None
+Compound "Root compound"
+List "list" String 0
+End
+List "list" String[0]
+End
+List "list" Int[2]
+2 3
+End
+End

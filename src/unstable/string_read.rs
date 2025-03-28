@@ -176,7 +176,7 @@ fn read_tag(tokens: &mut Peekable<Tokens>, tag_type: &str) -> Result<NBT> {
         "Double" => read_double(tokens),
         "ByteArray" => read_byte_array(tokens),
         "String" => read_string(tokens),
-        "List" => read_list(tokens),
+        x if x.starts_with("List") => read_list(tokens),
         "Compound" => read_compound(tokens),
         "IntArray" => read_int_array(tokens),
         "LongArray" => read_long_array(tokens),
@@ -272,17 +272,49 @@ fn read_string(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
 }
 
 fn read_list(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
-    let list_type = match tokens.next() {
+    /// Read a List type/length header
+    fn read_list_header(header: &str) -> Result<(&str, Option<usize>)> {
+        if header.contains('[') {
+            let (left, right) = header
+                .split_once('[')
+                .ok_or_else(|| anyhow!("Invalid list header '{}'", header))?;
+            let (number, empty) = right
+                .split_once(']')
+                .ok_or_else(|| anyhow!("Invalid list header '{}'", header))?;
+            if !empty.is_empty() {
+                bail!("Invalid list header '{}'", header);
+            }
+
+            let len: usize = number
+                .parse()
+                .with_context(|| format!("Invalid list length {}", header))?;
+
+            Ok((left, Some(len)))
+        } else {
+            Ok((header, None))
+        }
+    }
+
+    let list_header = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a list type"),
     };
-    let len = match read_int(tokens)? {
-        NBT::Int(x) => x,
-        _ => unreachable!(),
+
+    let (list_type, len) = read_list_header(list_header.borrow())?;
+
+    let len: usize = match len {
+        Some(x) => x,
+        None => match read_int(tokens)? {
+            NBT::Int(x) => {
+                usize::try_from(x).with_context(|| format!("Invalid list length {}", x))?
+            }
+            _ => unreachable!(),
+        },
     };
-    let mut tmp = Vec::with_capacity(len as usize);
+
+    let mut tmp = Vec::with_capacity(len);
     for _ in 0..len {
-        tmp.push(read_tag(tokens, &list_type)?);
+        tmp.push(read_tag(tokens, list_type)?);
     }
 
     Ok(NBT::List(tmp))

@@ -202,7 +202,7 @@ fn read_short(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     };
     let val = val
         .parse::<i16>()
-        .context(format!("Invalid Short {}", val))?;
+        .with_context(|| format!("Invalid Short {}", val))?;
     Ok(NBT::Short(val))
 }
 
@@ -211,7 +211,9 @@ fn read_int(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
         Some(x) => x?,
         None => bail!("EOF when trying to read an int"),
     };
-    let val = val.parse::<i32>().context(format!("Invalid Int {}", val))?;
+    let val = val
+        .parse::<i32>()
+        .with_context(|| format!("Invalid Int {}", val))?;
     Ok(NBT::Int(val))
 }
 
@@ -222,7 +224,7 @@ fn read_long(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     };
     let val = val
         .parse::<i64>()
-        .context(format!("Invalid Long {}", val))?;
+        .with_context(|| format!("Invalid Long {}", val))?;
     Ok(NBT::Long(val))
 }
 
@@ -233,7 +235,7 @@ fn read_float(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     };
     let val = val
         .parse::<f32>()
-        .context(format!("Invalid Float {}", val))?;
+        .with_context(|| format!("Invalid Float {}", val))?;
     Ok(NBT::Float(val))
 }
 
@@ -244,7 +246,7 @@ fn read_double(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     };
     let val = val
         .parse::<f64>()
-        .context(format!("Invalid Double {}", val))?;
+        .with_context(|| format!("Invalid Double {}", val))?;
     Ok(NBT::Double(val))
 }
 

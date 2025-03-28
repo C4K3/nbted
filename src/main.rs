@@ -177,13 +177,12 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         read::read_file(&mut f).context("Unable to parse any NBT files from stdin")?
     } else {
         let path: &Path = Path::new(input);
-        let f = File::open(path).context(format!("Unable to open file {}", input))?;
+        let f = File::open(path).with_context(|| format!("Unable to open file {}", input))?;
         let mut f = BufReader::new(f);
 
-        read::read_file(&mut f).context(format_err!(
-            "Unable to parse {}, are you sure it's an NBT file?",
-            input
-        ))?
+        read::read_file(&mut f).with_context(|| {
+            format_err!("Unable to parse {}, are you sure it's an NBT file?", input)
+        })?
     };
 
     /* Then we create a temporary file and write the NBT data in text format
@@ -256,13 +255,15 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(path).context(format_err!(
-            "Unable to write to output NBT file {}. Nothing was changed",
-            output
-        ))?;
+        let f = File::create(path).with_context(|| {
+            format_err!(
+                "Unable to write to output NBT file {}. Nothing was changed",
+                output
+            )
+        })?;
         let mut f = BufWriter::new(f);
 
-        write::write_file(&mut f, &new_nbt).context(
+        write::write_file(&mut f, &new_nbt).with_context(||
             format_err!("Error writing NBT file {}. State of NBT file is unknown, consider restoring it from a backup.",
                        output))?;
     }
@@ -293,9 +294,8 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
     }
 
     /* Then we parse the text format in the temporary file into NBT */
-    let mut f = File::open(tmp_path).context(format_err!(
-        "Unable to read temporary file. Nothing was changed."
-    ))?;
+    let mut f = File::open(tmp_path)
+        .with_context(|| format_err!("Unable to read temporary file. Nothing was changed."))?;
 
     string_read::read_file(&mut f)
 }
@@ -306,19 +306,17 @@ fn print(input: &str, output: &str) -> Result<i32> {
     let nbt = if input == "-" {
         let f = io::stdin();
         let mut f = f.lock();
-        read::read_file(&mut f).context(format_err!(
-            "Unable to parse {}, are you sure it's an NBT file?",
-            input
-        ))?
+        read::read_file(&mut f).with_context(|| {
+            format_err!("Unable to parse {}, are you sure it's an NBT file?", input)
+        })?
     } else {
         let path: &Path = Path::new(input);
-        let f = File::open(path).context(format_err!("Unable to open file {}", input))?;
+        let f = File::open(path).with_context(|| format_err!("Unable to open file {}", input))?;
         let mut f = BufReader::new(f);
 
-        read::read_file(&mut f).context(format_err!(
-            "Unable to parse {}, are you sure it's an NBT file?",
-            input
-        ))?
+        read::read_file(&mut f).with_context(|| {
+            format_err!("Unable to parse {}, are you sure it's an NBT file?", input)
+        })?
     };
 
     /* Then we write the NBTFile to the output in text format */
@@ -335,13 +333,15 @@ fn print(input: &str, output: &str) -> Result<i32> {
         }
     } else {
         let path: &Path = Path::new(output);
-        let f = File::create(path).context(format_err!(
-            "Unable to write to output NBT file {}. Nothing was changed.",
-            output
-        ))?;
+        let f = File::create(path).with_context(|| {
+            format_err!(
+                "Unable to write to output NBT file {}. Nothing was changed.",
+                output
+            )
+        })?;
         let mut f = BufWriter::new(f);
 
-        string_write::write_file(&mut f, &nbt).context(
+        string_write::write_file(&mut f, &nbt).with_context(||
             format_err!("Error writing NBT file {}. State of NBT file is unknown, consider restoring it from a backup.",
                        output))?;
     }
@@ -355,10 +355,11 @@ fn print(input: &str, output: &str) -> Result<i32> {
 fn reverse(input: &str, output: &str) -> Result<i32> {
     /* First we read the input file in the text format */
     let path: &Path = Path::new(input);
-    let mut f = File::open(path).context(format_err!("Unable to read text file {}", input))?;
+    let mut f =
+        File::open(path).with_context(|| format_err!("Unable to read text file {}", input))?;
 
     let nbt = string_read::read_file(&mut f)
-        .context(format_err!("Unable to parse text file {}", input))?;
+        .with_context(|| format_err!("Unable to parse text file {}", input))?;
 
     /* Then we write the parsed NBT to the output file in NBT format */
     if output == "-" {
@@ -382,7 +383,7 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
         })?;
         let mut f = BufWriter::new(f);
 
-        write::write_file(&mut f, &nbt).context(
+        write::write_file(&mut f, &nbt).with_context(||
             format_err!("error writing to NBT FILE {}, state of NBT file is unknown, consider restoring it from a backup.",
                        output))?;
     }

@@ -1,8 +1,9 @@
 use crate::data::{Compression, NBTFile, NBT};
 use crate::Result;
 
-use std::borrow::Cow;
+use std::borrow::{Borrow, Cow};
 use std::io::Read;
+use std::iter::Peekable;
 use std::str;
 
 use anyhow::{anyhow, bail, Context};
@@ -126,26 +127,46 @@ pub fn read_file<R: Read>(reader: &mut R) -> Result<NBTFile> {
     let mut buf = Vec::new();
     let _: usize = reader.read_to_end(&mut buf)?;
 
-    let mut tokens = Tokens::new(&buf);
+    let mut tokens = Tokens::new(&buf).peekable();
 
-    let compression = {
-        let tmp = match tokens.next() {
-            Some(x) => x?,
-            None => bail!("NBT file in text format does not contain any tags at all"),
-        };
+    let mut compression = None;
 
-        match Compression::from_str(&tmp) {
-            Some(x) => x,
-            None => bail!("Unknown compression format {}", tmp),
+    while let Some(Ok(token)) = tokens.next_if(|token| match token.as_deref() {
+        // This closure is used to check if the next token is a header (return True) or the
+        // beginning of the contents of the NBT file (return False) The root tag must always be a
+        // Compound in an NBT file, so if we see Compound we know the headers are finished. nbted
+        // has also previously supported parsing empty files (containing only a single End) so
+        // support that as well.
+        Err(_) => false,
+        Ok("Compound") => false,
+        Ok("End") => false,
+        Ok(_) => true,
+    }) {
+        match Compression::from_str(token.borrow()) {
+            Some(x) => {
+                if compression.is_some() {
+                    bail!("Found multiple compression settings");
+                }
+
+                compression = Some(x);
+            }
+            None => bail!("Unknown header '{}'", token),
         }
-    };
+    }
+
+    // Default to no compression if not specified
+    let compression = compression.unwrap_or(Compression::None);
+
+    if tokens.peek().is_none() {
+        bail!("NBT file in text format does not contain any tags at all");
+    }
 
     let root = read_compound(&mut tokens)?;
 
     Ok(NBTFile { root, compression })
 }
 
-fn read_tag(tokens: &mut Tokens, tag_type: &str) -> Result<NBT> {
+fn read_tag(tokens: &mut Peekable<Tokens>, tag_type: &str) -> Result<NBT> {
     match tag_type {
         "Byte" => read_byte(tokens),
         "Short" => read_short(tokens),
@@ -163,7 +184,7 @@ fn read_tag(tokens: &mut Tokens, tag_type: &str) -> Result<NBT> {
     }
 }
 
-fn read_byte(tokens: &mut Tokens) -> Result<NBT> {
+fn read_byte(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a byte"),
@@ -174,7 +195,7 @@ fn read_byte(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Byte(val))
 }
 
-fn read_short(tokens: &mut Tokens) -> Result<NBT> {
+fn read_short(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a short"),
@@ -185,7 +206,7 @@ fn read_short(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Short(val))
 }
 
-fn read_int(tokens: &mut Tokens) -> Result<NBT> {
+fn read_int(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read an int"),
@@ -194,7 +215,7 @@ fn read_int(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Int(val))
 }
 
-fn read_long(tokens: &mut Tokens) -> Result<NBT> {
+fn read_long(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a long"),
@@ -205,7 +226,7 @@ fn read_long(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Long(val))
 }
 
-fn read_float(tokens: &mut Tokens) -> Result<NBT> {
+fn read_float(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a float"),
@@ -216,7 +237,7 @@ fn read_float(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Float(val))
 }
 
-fn read_double(tokens: &mut Tokens) -> Result<NBT> {
+fn read_double(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a double"),
@@ -227,7 +248,7 @@ fn read_double(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Double(val))
 }
 
-fn read_byte_array(tokens: &mut Tokens) -> Result<NBT> {
+fn read_byte_array(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let len = match read_int(tokens)? {
         NBT::Int(x) => x,
         _ => unreachable!(),
@@ -242,7 +263,7 @@ fn read_byte_array(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::ByteArray(tmp))
 }
 
-fn read_string(tokens: &mut Tokens) -> Result<NBT> {
+fn read_string(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let val = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a string"),
@@ -250,7 +271,7 @@ fn read_string(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::String(val.into_owned().into_bytes()))
 }
 
-fn read_list(tokens: &mut Tokens) -> Result<NBT> {
+fn read_list(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let list_type = match tokens.next() {
         Some(x) => x?,
         None => bail!("EOF when trying to read a list type"),
@@ -267,7 +288,7 @@ fn read_list(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::List(tmp))
 }
 
-fn read_compound(tokens: &mut Tokens) -> Result<NBT> {
+fn read_compound(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let mut map = Vec::new();
 
     loop {
@@ -296,7 +317,7 @@ fn read_compound(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::Compound(map))
 }
 
-fn read_int_array(tokens: &mut Tokens) -> Result<NBT> {
+fn read_int_array(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let len = match read_int(tokens)? {
         NBT::Int(x) => x,
         _ => unreachable!(),
@@ -311,7 +332,7 @@ fn read_int_array(tokens: &mut Tokens) -> Result<NBT> {
     Ok(NBT::IntArray(tmp))
 }
 
-fn read_long_array(tokens: &mut Tokens) -> Result<NBT> {
+fn read_long_array(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
     let len = match read_int(tokens)? {
         NBT::Int(x) => x,
         _ => unreachable!(),

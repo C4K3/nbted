@@ -115,8 +115,8 @@ impl Compression {
     /// used in that file. Returns Some(Compression) if the type of compression
     /// is known, and None else.
     pub fn from_first_byte(byte: u8) -> Option<Self> {
-        /* On compression: To identify how an nbt file is compressed, peek
-         * at the first byte in the file, with the following meanings: */
+        // On compression: To identify how an nbt file is compressed, peek
+        // at the first byte in the file, with the following meanings:
         match byte {
             0x0a => Some(Compression::None),
             0x1f => Some(Compression::Gzip),

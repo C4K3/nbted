@@ -34,8 +34,8 @@ fn empty_file() {
 
 #[test]
 fn text_file_with_no_trailing_bytes() {
-    /* I experienced an error with the new tokenizer where it would ignore the
-     * last tag unless there was at least 1 byte following it */
+    // I experienced an error with the new tokenizer where it would ignore the
+    // last tag unless there was at least 1 byte following it
     let _: NBTFile = try_parse_string("None End").unwrap();
 }
 
@@ -74,17 +74,17 @@ fn invalid_tag_type() {
 
 #[test]
 fn long_array() {
-    /* LongArray should compile */
+    // LongArray should compile
     let _: NBTFile =
         try_parse_string(r#"None Compound "tag" Compound "BlockEntityTag" LongArray "Items" 0 String "id" "minecraft:shulker_box" End End End"#).unwrap();
 }
 
 #[test]
 fn unquoted_string() {
-    /* Since the rewrite of the tokenizer, strings without quotation marks have
-     * become valid syntax. I'm not sure if I want to keep this valid or not,
-     * so I'll leave it undocumented except for this test testing that they are
-     * parsed */
+    // Since the rewrite of the tokenizer, strings without quotation marks have
+    // become valid syntax. I'm not sure if I want to keep this valid or not,
+    // so I'll leave it undocumented except for this test testing that they are
+    // parsed
     let _: NBTFile =
         try_parse_string(r#"None Compound ForgotQuotationMarksAroundThisString End End"#).unwrap();
 }

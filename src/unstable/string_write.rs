@@ -65,14 +65,14 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Res
                 write!(w, " ")?;
             }
             write!(w, r#"""#)?;
-            /* Order is important here */
+            // Order is important here
             for b in x.iter().replacer(br"\", br"\\").replacer(br#"""#, br#"\""#) {
                 w.write_all(&[b])?;
             }
             writeln!(w, r#"""#)?;
         }
         NBT::List(ref x) => {
-            /* If the list has length 0, then it just defaults to type "End". */
+            // If the list has length 0, then it just defaults to type "End".
             let tag_type = if x.is_empty() {
                 "End"
             } else {
@@ -130,7 +130,7 @@ fn write_tag<W: Write>(w: &mut W, tag: &NBT, indent: u64, compound: bool) -> Res
 
 fn write_indent<W: Write>(w: &mut W, indent: u64) -> Result<()> {
     for _ in 0..indent {
-        /* 9 = tab character */
+        // 9 = tab character
         w.write_u8(9)?;
     }
     Ok(())

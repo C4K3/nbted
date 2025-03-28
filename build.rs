@@ -4,10 +4,10 @@ use std::io::prelude::*;
 use std::path::Path;
 use std::process::Command;
 
-/* All the build file currently does is try to figure out the current
- * git revision, and write it to the OUT_DIR/git-revision.txt file */
+// All the build file currently does is try to figure out the current
+// git revision, and write it to the OUT_DIR/git-revision.txt file.
 fn main() {
-    /* Figure out the current git revision */
+    // Figure out the current git revision
     let git: String = match Command::new("git").arg("rev-parse").arg("HEAD").output() {
         Ok(x) => match String::from_utf8(x.stdout) {
             Ok(x) => format!(r#""{}""#, x.trim()),

@@ -98,7 +98,7 @@ fn write_string<W: Write>(w: &mut W, val: &[u8]) -> Result<()> {
 }
 
 fn write_list<W: Write>(w: &mut W, val: &[NBT]) -> Result<()> {
-    /* If the list has length 0, then it just defaults to type "End". */
+    // If the list has length 0, then it just defaults to type "End".
     #[rustfmt::skip]
     let tag_type = if val.is_empty() {
         0
@@ -122,7 +122,7 @@ fn write_compound<W: Write>(w: &mut W, map: &[(Vec<u8>, NBT)], end: bool) -> Res
         write_tag(w, tag)?;
     }
 
-    /* Append the End tag, but not on the implicit Compound */
+    // Append the End tag, but not on the implicit Compound
     if end {
         w.write_all(&[0])?;
     }

@@ -80,7 +80,7 @@ fn run_cmdline() -> Result<i32> {
             "{} {} {}",
             env!("CARGO_PKG_NAME"),
             env!("CARGO_PKG_VERSION"),
-            /* See build.rs for the git-revision.txt file */
+            // See build.rs for the git-revision.txt file
             include!(concat!(env!("OUT_DIR"), "/git-revision.txt"))
         );
         println!("https://github.com/C4K3/nbted");
@@ -97,13 +97,13 @@ fn run_cmdline() -> Result<i32> {
     let is_edit: bool = if matches.opt_present("edit") {
         true
     } else {
-        /* If edit is not explicitly defined, it is the default action and is
-         * selected if no other action is specified */
+        // If edit is not explicitly defined, it is the default action and is
+        // selected if no other action is specified
         !(is_reverse || is_print)
     };
 
-    /* Hopefully this is a simpler way of ensuring that only one action can be
-     * taken than having a long logical expression */
+    // Hopefully this is a simpler way of ensuring that only one action can be
+    // taken than having a long logical expression
     let mut action_count = 0;
     if is_print {
         action_count += 1;
@@ -118,10 +118,10 @@ fn run_cmdline() -> Result<i32> {
         bail!("You can only specify one action at a time.");
     }
 
-    /* Figure out the input file, by trying to read the arguments for all of
-     * --input, --edit, --print and --reverse, prioritizing --input over the
-     * other arguments, if none of the arguments are specified but there is a
-     * free argument, use that, else we finally default to - (stdin) */
+    // Figure out the input file, by trying to read the arguments for all of
+    // --input, --edit, --print and --reverse, prioritizing --input over the
+    // other arguments, if none of the arguments are specified but there is a
+    // free argument, use that, else we finally default to - (stdin)
     let input = if let Some(x) = matches.opt_str("input") {
         x
     } else if let Some(x) = matches.opt_str("edit") {
@@ -133,7 +133,7 @@ fn run_cmdline() -> Result<i32> {
     } else if matches.free.len() == 1 {
         matches.free[0].clone()
     } else {
-        /* stdin */
+        // stdin
         "-".to_string()
     };
 
@@ -142,11 +142,11 @@ fn run_cmdline() -> Result<i32> {
     } else if let Some(x) = matches.opt_str("edit") {
         x
     } else if is_edit && matches.free.len() == 1 {
-        /* Only want to default to the free argument if we're editing
-         * (DO NOT WRITE BACK TO THE READ FILE UNLESS EDITING!) */
+        // Only want to default to the free argument if we're editing
+        // (DO NOT WRITE BACK TO THE READ FILE UNLESS EDITING!)
         matches.free[0].clone()
     } else {
-        /* stdout */
+        // stdout
         "-".to_string()
     };
 
@@ -169,7 +169,7 @@ fn run_cmdline() -> Result<i32> {
 ///
 /// Returns an integer representing the program's exit status.
 fn edit(input: &str, output: &str) -> Result<i32> {
-    /* First we read the NBT data from the input */
+    // First we read the NBT data from the input
     let nbt = if input == "-" {
         // let mut f = BufReader::new(io::stdin());
         let f = io::stdin();
@@ -185,8 +185,8 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         })?
     };
 
-    /* Then we create a temporary file and write the NBT data in text format
-     * to the temporary file */
+    // Then we create a temporary file and write the NBT data in text format
+    // to the temporary file
     let tmpdir = tempfile::Builder::new()
         .prefix("nbted")
         .tempdir()
@@ -241,14 +241,14 @@ fn edit(input: &str, output: &str) -> Result<i32> {
         return Ok(0);
     }
 
-    /* And finally we write the edited nbt (new_nbt) into the output file */
+    // And finally we write the edited nbt (new_nbt) into the output file
     if output == "-" {
         let f = io::stdout();
         let mut f = f.lock();
-        /* If we get an error writing to stdout, we want to just silently exit
-         * with exit code 1. (It can generally be assumed that nbted will not
-         * error in serializing the data, so any error here would be because of
-         * writing to stdout) */
+        // If we get an error writing to stdout, we want to just silently exit
+        // with exit code 1. (It can generally be assumed that nbted will not
+        // error in serializing the data, so any error here would be because of
+        // writing to stdout)
         match write::write_file(&mut f, &new_nbt) {
             Ok(()) => (),
             Err(_) => return Ok(1),
@@ -293,7 +293,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
         _ => bail!("Editor did not exit correctly"),
     }
 
-    /* Then we parse the text format in the temporary file into NBT */
+    // Then we parse the text format in the temporary file into NBT
     let mut f = File::open(tmp_path)
         .with_context(|| format_err!("Unable to read temporary file. Nothing was changed."))?;
 
@@ -302,7 +302,7 @@ fn open_editor(tmp_path: &Path) -> Result<data::NBTFile> {
 
 /// When the user wants to print an NBT file to text format
 fn print(input: &str, output: &str) -> Result<i32> {
-    /* First we read a NBTFile from the input */
+    // First we read a NBTFile from the input
     let nbt = if input == "-" {
         let f = io::stdin();
         let mut f = f.lock();
@@ -319,14 +319,14 @@ fn print(input: &str, output: &str) -> Result<i32> {
         })?
     };
 
-    /* Then we write the NBTFile to the output in text format */
+    // Then we write the NBTFile to the output in text format
     if output == "-" {
         let f = io::stdout();
         let mut f = f.lock();
-        /* If we get an error writing to stdout, we want to just silently exit
-         * with exit code 1. (It can generally be assumed that nbted will not
-         * error in serializing the data, so any error here would be because of
-         * writing to stdout) */
+        // If we get an error writing to stdout, we want to just silently exit
+        // with exit code 1. (It can generally be assumed that nbted will not
+        // error in serializing the data, so any error here would be because of
+        // writing to stdout)
         match string_write::write_file(&mut f, &nbt) {
             Ok(()) => (),
             Err(_) => return Ok(1),
@@ -353,7 +353,7 @@ fn print(input: &str, output: &str) -> Result<i32> {
 ///
 /// Returns an integer representing the program's exit status.
 fn reverse(input: &str, output: &str) -> Result<i32> {
-    /* First we read the input file in the text format */
+    // First we read the input file in the text format
     let path: &Path = Path::new(input);
     let mut f =
         File::open(path).with_context(|| format_err!("Unable to read text file {}", input))?;
@@ -361,14 +361,14 @@ fn reverse(input: &str, output: &str) -> Result<i32> {
     let nbt = string_read::read_file(&mut f)
         .with_context(|| format_err!("Unable to parse text file {}", input))?;
 
-    /* Then we write the parsed NBT to the output file in NBT format */
+    // Then we write the parsed NBT to the output file in NBT format
     if output == "-" {
         let f = io::stdout();
         let mut f = f.lock();
-        /* If we get an error writing to stdout, we want to just silently exit
-         * with exit code 1. (It can generally be assumed that nbted will not
-         * error in serializing the data, so any error here would be because of
-         * writing to stdout) */
+        // If we get an error writing to stdout, we want to just silently exit
+        // with exit code 1. (It can generally be assumed that nbted will not
+        // error in serializing the data, so any error here would be because of
+        // writing to stdout)
         match write::write_file(&mut f, &nbt) {
             Ok(()) => (),
             Err(_) => return Ok(1),

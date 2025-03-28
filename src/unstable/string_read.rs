@@ -31,11 +31,11 @@ impl<'a> Iterator for Tokens<'a> {
         while self.file.get(self.a)?.is_whitespace() {
             self.a += 1;
         }
-        /* a now matches the beginning of the next token */
+        // a now matches the beginning of the next token
 
         if *self.file.get(self.a)? == 0x22 {
-            /* The next token is a string */
-            self.a += 1; /* So we don't include the beginning " */
+            // The next token is a string
+            self.a += 1; // So we don't include the beginning "
 
             self.b = self.a;
 
@@ -43,8 +43,8 @@ impl<'a> Iterator for Tokens<'a> {
             let mut ret: Vec<u8> = Vec::new();
 
             loop {
-                /* 0x22 = "
-                 * 0x5c = \ */
+                // 0x22 = "
+                // 0x5c = \
                 match self.file.get(self.b)? {
                     0x22 => {
                         if escape {
@@ -83,7 +83,7 @@ impl<'a> Iterator for Tokens<'a> {
             self.a = self.b;
             Some(Ok(ret))
         } else {
-            /* The next token is not a string */
+            // The next token is not a string
             self.b = self.a;
 
             while let Some(x) = self.file.get(self.b) {
@@ -111,12 +111,12 @@ trait IsWhitespace {
 impl IsWhitespace for u8 {
     fn is_whitespace(&self) -> bool {
         match *self {
-            0x09 => true, /* Tab */
-            0x0a => true, /* Newline */
-            0x0b => true, /* Vertical tab */
-            0x0c => true, /* Form feed */
-            0x0d => true, /* Carriage return */
-            0x20 => true, /* Space */
+            0x09 => true, // Tab
+            0x0a => true, // Newline
+            0x0b => true, // Vertical tab
+            0x0c => true, // Form feed
+            0x0d => true, // Carriage return
+            0x20 => true, // Space
             _ => false,
         }
     }
@@ -331,7 +331,7 @@ fn read_compound(tokens: &mut Peekable<Tokens>) -> Result<NBT> {
             None => bail!("EOF when trying to read the next item in a compound"),
         };
 
-        /* If we get an End tag then the compound is done */
+        // If we get an End tag then the compound is done
         if &tag_type == "End" {
             break;
         }

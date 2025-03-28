@@ -11,8 +11,8 @@ use anyhow::bail;
 
 /// Read an NBT file from the given reader
 pub fn read_file<R: BufRead>(mut reader: &mut R) -> Result<NBTFile> {
-    /* Peek into the first byte of the reader, which is used to determine the
-     * compression */
+    // Peek into the first byte of the reader, which is used to determine the
+    // compression
     let peek = match reader.fill_buf()? {
         x if !x.is_empty() => x[0],
         _ => bail!("Error peaking first byte in read::read_file, file was EOF"),
@@ -43,7 +43,7 @@ fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
     loop {
         let mut buf: [u8; 1] = [0];
 
-        /* If unable to read anything, then we're done */
+        // If unable to read anything, then we're done
         match reader.read_exact(&mut buf) {
             Ok(()) => (),
             Err(ref e) if e.kind() == io::ErrorKind::UnexpectedEof => {
@@ -54,7 +54,7 @@ fn read_compound<R: Read>(reader: &mut R) -> Result<NBT> {
             }
         }
 
-        /* If we've got a TAG_end now, then the compound list is done */
+        // If we've got a TAG_end now, then the compound list is done
         if buf[0] == 0x0 {
             break;
         }
@@ -130,8 +130,8 @@ fn read_byte_array<R: Read>(reader: &mut R) -> Result<NBT> {
 }
 
 fn read_string<R: Read>(reader: &mut R) -> Result<NBT> {
-    /* Apparently the length of a string is given unsigned unlike everything
-     * else in NBT */
+    // Apparently the length of a string is given unsigned unlike everything
+    // else in NBT
     let length = reader.read_u16::<BigEndian>()?;
 
     let mut buf = Vec::with_capacity(length as usize);
